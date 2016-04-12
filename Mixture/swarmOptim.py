@@ -1,8 +1,8 @@
 from __future__ import print_function
+import numpy as np
 
 
-
-def swarmOptim(Mixobj, 
+def swarm(Mixobj, 
 			   prec = 1, 
 			   iteration = 10, 
 			   mutate_iteration = 20, 
@@ -42,9 +42,9 @@ def swarmOptim(Mixobj,
 			print('pre burnin iteration {j}'.format(j = j))
 		mutate(Mixobj, prec, iteration = mutate_iteration, silent = silent)
 		mutate(Mixobj, prec, iteration = mutate_iteration, silent = silent, rand_class =True)
-		burst(GMM,         iteration = burst_iteration,   silent = silent)
+		burst(Mixobj,        iteration = burst_iteration,   silent = silent)
 		for k in range(local_iter):  # @UnusedVariable
-			GMM.step()
+			Mixobj.step()
 
 
 def mutate(Mixobj, 
@@ -60,20 +60,20 @@ def mutate(Mixobj,
   		*rand_class* - draw the class at random (else always take the smallest) 
 	'''
 	
-	param0 = Mixobj.store_param()
-	point_ = draw_outlier_point(Mixobj, prec)
+	param0 = Mixobj.storeParam()
+	point_ = drawOutlierPoint(Mixobj, prec)
 	if rand_class:
 		k  = np.random.randint(Mixobj.K)
 	else:
 		k  = np.argmin(Mixobj.p[:Mixobj.K])
 
 
-	Mixobj.setMutated( k, point_)
+	Mixobj.setMutated( [k], point_)
 	
 	for i in range(iteration):
 		Mixobj.step()
 		
-	F = Mixobj.F()
+	F = Mixobj.F
 	if param0['F'] < F:
 		if silent is False:
 			if rand_class:
@@ -82,7 +82,7 @@ def mutate(Mixobj,
 				print('min mutation %.2f < %.2f'%(param0['F'], F))
 		return
 	
-	GMM.restore_param( param0)
+	Mixobj.restoreParam( param0)
 
 def drawOutlierPoint(Mixobj, prec = 0.1):
 	"""
@@ -110,7 +110,7 @@ def burst(Mixobj,
 		*randclass* should the second class be chosen at random or through
 					distance 
 	'''
-	param0 = store_param(Mixobj)
+	param0 = Mixobj.storeParam()
 	
 	k  = np.random.randint(Mixobj.K)
 	if randclass:
@@ -121,7 +121,7 @@ def burst(Mixobj,
 		dist = Mixobj.dist(k)
 		dist[k] = np.Inf
 		k2 = np.argmin(dist)
-	d_ = np.random.randint(GMM.d)
+
 	x = Mixobj.hardClass()
 	index = (x == k) + (x == k2)
 	y_index = Mixobj.Y[index,:]
@@ -136,8 +136,10 @@ def burst(Mixobj,
 	for i in range(iteration):
 		Mixobj.step()
 
-	F = Mixobj.F()
+	F = Mixobj.F
 	if param0['F'] < F:
 		if silent is False:
 			print('burst mutation %.2f < %.2f'%(param0['F'], F))
 		return
+
+	Mixobj.restoreParam(param0)

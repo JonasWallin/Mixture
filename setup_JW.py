@@ -22,8 +22,9 @@ metadata = dict(
       requires=['numpy (>=1.3.0)',
                 'cython (>=0.17)',
                 'BayesFlow'],
-      #cmdclass={'build_ext': build_ext},
-      packages=['Mixture'],
-      package_dir={'Mixture': 'Mixture/'}
+      packages=['Mixture',
+                'Mixture.Bayesflow'],
+      package_dir={'Mixture': 'Mixture/',
+                   'Mixture.Bayesflow': 'Mixture/Bayesflow'}
               )
 setup(**metadata)
