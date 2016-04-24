@@ -80,9 +80,12 @@ class HGMMMerge(object):
                 for i, par in enumerate(parList):
                     if (par['rank'] != 0) or (i > 0) or (self.index_start == 0):
                         self.params.append(par)
-    def run(self):
+    def run(self, shrinkage  =0.1):
         """
             runs the main loop
+            
+            shrinkage - two shrink the prior covariance towards the mean for alpha in
+                        logistic normal
         """
         self.gather()
         
@@ -118,12 +121,14 @@ class HGMMMerge(object):
         
             # if rank not equal to zero send in mus[1:], sigmas[1:], ps[1:]
             
-        self.optim() 
+        self.optim(shrinkage) 
     
-    def optim(self):
+    def optim(self, shrinkage = 0.1):
         """
             merges the classes using a multi t distribution
             for the mus (could also use on for other distance!
+            
+            shrinkage - how much two shrinkge the prior with
         """
         
         rank = self.comm .Get_rank()
@@ -176,9 +181,16 @@ class HGMMMerge(object):
         self.hGMM.update_prior()
         
         [GMM.updata_mudata() for GMM in self.hGMM.GMMs]
-        [GMM.sample_x()      for GMM in self.hGMM.GMMs]    
-    
-        #collect alphas, set the posteriror for 
+        [GMM.sample_x()      for GMM in self.hGMM.GMMs] 
+        alphas = self.hGMM.get_alphas()  
+        if rank == 0: 
+            A = alphas.reshape(-1, 1)
+            B = np.vstack(self.hGMM.alpha_prior.Bs_mu)
+            self.hGMM.alpha_prior.beta_mu = np.linalg.lstsq(B, A)[0].reshape(-1)
+            self.hGMM.alpha_prior.Sigma = shrinkage * np.eye(self.K-1)
+        self.hGMM.update_GMM() 
+        [GMM.sample()  for GMM in self.hGMM.GMMs] 
+        self.hGMM.update_prior()
     
     def dist(self,i, param, mus, sigmas, ps):
         """

@@ -14,7 +14,14 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from Mixture import swarm
 from Mixture.Bayesflow  import GMMoptim, merge
 from mpi4py import MPI
-
+def invlogit(alpha):
+    """
+        inverse logit
+    """
+        
+    p = np.hstack((1.,np.exp(alpha.flatten())))
+    p /= np.sum(p)
+    return p.flatten()
 
 majorFormatter = FormatStrFormatter('%.1e')
 
@@ -101,10 +108,11 @@ if __name__ == '__main__':
     silent = True
     comm = MPI.COMM_WORLD  # @UndefinedVariable
     rank = comm.Get_rank()
-    np.random.seed(0 + rank)
-    K = 10
-    iteration = 40
-    sim = 300
+    np.random.seed(2 + rank)
+    repeat = 3
+    K = 3
+    iteration = 10
+    sim = 10
     plt.close('all')
     plt.ion()
     
@@ -132,47 +140,31 @@ if __name__ == '__main__':
         swarm(mixOptim, iteration = iteration, silent = True)
 
     mergeObj = merge.HGMMMerge(hGMM)
-    mergeObj.startup()
-    mergeObj.run()
-    mergeObj.reset()
-    #mus = merge.orderByMean(hGMM.GMMs)
-    
-    for i in range(sim):
+
+    for j in range(repeat):
+        mergeObj.startup()
+        mergeObj.run(1e-7)
+        mergeObj.reset()
         if rank == 0:
-            if not silent:
-                print(' sim = {}'.format(i))
-        hGMM.sample()
+            print('*********************************')
+            print('PRE RUN')
+            print('logit^-1(mu_alpha) = {}'.format(invlogit(hGMM.alpha_prior.beta_mu)))
+            print('diag(Sigmas_alpha) = {}'.format(np.diag(hGMM.alpha_prior.Sigma)))
+            print('beta_alpha        = {}'.format(hGMM.alpha_prior.beta_mu))
+        
+        for i in range(sim):
+            if rank == 0:
+                if not silent:
+                    print(' sim = {}'.format(i))
+            hGMM.sample()
+        if rank == 0:
+            print('POST RUN')
+            print('logit^-1(mu_alpha) = {}'.format(invlogit(hGMM.alpha_prior.beta_mu)))
+            print('diag(Sigmas_alpha) = {}'.format(np.diag(hGMM.alpha_prior.Sigma)))
+            print('beta_alpha        = {}'.format(hGMM.alpha_prior.beta_mu))
     
     
             
-    mergeObj.startup()
-    mergeObj.run()  
-    
-    for i in range(sim):
-        if rank == 0:
-            if not silent:
-                print(' sim = {}'.format(i))
-        hGMM.sample()
-
-    mergeObj.reset()
-    mergeObj.startup()
-    mergeObj.run()  
-    
-    for i in range(sim):
-        if rank == 0:
-            if not silent:
-                print(' sim = {}'.format(i))
-        hGMM.sample()
-
-    mergeObj.reset()
-    mergeObj.startup()
-    mergeObj.run()  
-    
-    for i in range(sim):
-        if rank == 0:
-            if not silent:
-                print(' sim = {}'.format(i))
-        hGMM.sample()
     fig = plt.figure()
     fig.subplots_adjust(hspace=.7)
 
