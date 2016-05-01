@@ -9,20 +9,23 @@ from Mixture.density import NIG
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sp
-n  = 6000
+n  = 10000
 
 
 if __name__ == "__main__":
-    simObj = NIG(paramvec = [0,0,0,0,0])
+    simObj = NIG(paramvec = [1.1, 2.12,0.1,0.1])
     Y = simObj.simulate(n = n)
     plt.hist(Y, 200,normed=True, histtype='stepfilled', alpha=0.2)
     x_ =np.linspace(np.min(Y),np.max(Y), num = 1000)
     logf = simObj(y = x_)
     plt.plot(x_, np.exp(logf))
-    #TODO see that mean variance is equal
-    #plot check
-    f = lambda x: np.exp(simObj(y = x) )
-    res=  sp.integrate.quad(f, -np.inf, np.inf)
-    print(res)
-    plt.show()
-    
+    simObj.set_data(Y)
+    def f(x):
+        lik =  - np.sum(simObj(paramvec= x))
+        if np.isnan(lik):
+            return np.Inf
+        return lik
+    optim = sp.optimize.minimize(f, np.zeros(4),method='CG')
+    print(optim)
+    #plt.show()
+    print(f(optim.x))

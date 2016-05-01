@@ -99,11 +99,10 @@ class NIG(object):
             log_     - (bool)  return logarithm of density
             paramvec - (k x 1) the parameter to evalute the density
             
-             f(y) = \sqrt{\nu} \sigma^{-1/2} \pi^{-1} \exp(\nu) ...
+             f(y) = \sqrt{\nu} \sigma^{-1} \pi^{-1} \exp(\nu) ...
                    \exp( \frac{1}{\sigma^2}(y - \delta + \mu) \mu )    ...
                    \frac{a }{ b} K_{ 1 }(\sqrt{ ab })
         """
-        
         
         if y is None:
             y = self.y
@@ -113,7 +112,7 @@ class NIG(object):
         a        = nu + mu**2 / sigma**2  
         delta_mu = delta - mu
         
-        c0       = - np.log(np.pi) + 0.5 * np.log(nu) + nu 
+        c0       = - np.log(np.pi) + 0.5 * np.log(nu) + nu - np.log(sigma)
         
         
         #n  = y.shape[0]
@@ -137,7 +136,7 @@ class NIG(object):
             hidden function that returns paramvec
         """
         if paramvec is None:
-            mu = self.mu
+            mu    = self.mu
             delta = self.delta
             nu    = self.nu
             sigma = self.sigma
