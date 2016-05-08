@@ -66,7 +66,7 @@ class NIG(object):
         self.y = y.flatten()
         
         
-    def set_param_vec(self, priorvec):
+    def set_param_vec(self, paramvec):
         """
 
             priror set through vec
@@ -77,10 +77,10 @@ class NIG(object):
             [3] - sigma (in log)
         """
 
-        self.delta = priorvec[0]
-        self.mu    = priorvec[1]
-        self.nu    = priorvec[2]
-        self.sigma = priorvec[3]
+        self.delta = paramvec[0]
+        self.mu    = paramvec[1]
+        self.nu    = paramvec[2]
+        self.sigma = paramvec[3]
         self.update_param()
     
     def update_param(self):
@@ -162,7 +162,7 @@ class NIG(object):
         # scipy uses
         # X \sim IG( \mu, 1)         
         delta, mu, nu, sigma = self._paramvec(paramvec)
-        V = nu * invgauss.rvs( 1 , size= (n,1) )
+        V = nu * invgauss.rvs( 1. / nu , size= (n,1) )
         Z = npr.randn(n,1)
         X = (delta - mu) + mu * V + sigma * np.sqrt(V) * Z
         
@@ -170,9 +170,146 @@ class NIG(object):
         
         
 
+
+class multi_univ_NIG(object):   
+    """
+        for d-dimensional object where each dimension is iid
+    """
+    
+    def __init__(self, d = None, param = None, paramvec = None):
+    
+        if param is not None:
+            
+            d = len(param)
+            self.set_param(param)
+            
+        elif paramvec is not None:
+            
+            d = paramvec.shape[0]
+            self.set_param_vec(paramvec)
+            
+        self.NIGs = None
+        self.k    = None
         
+        if d is not None:
+            self.d = d
+            
+            self.k     = 4  * d 
         
+            self.set_objects()
+    
+    def set_objects(self, d = None):
+        """
+            sets up the basic objects
+        """
+        if d is None:
+            d = self.d
+            
+        if d is None:
+            raise Exception('dimesnion must be set before set_objects')
         
+        self.NIGs = [ NIG() for i in range(d)]  # @UnusedVariable
+      
+    def set_param(self, paramList):
+        """
+
+            paramList - list of dictonary contaning:
+
+            delta  - (1x1) mean
+            mu     - (1x1) assymetric parameter
+            sigma  - (1x1) the std (in log format)
+            nu     - (1)   shape parameter (in log format)
+        """
+        
+        [nig.set_param(paramList[i]) for i, nig in enumerate(self.NIGs)]
+        
+    
+    def set_data(self, y):
+        """
+            setting data
+            y - ( n x d) numpy array
+        """
+        if self.d is not None:
+            if y.shape[1] != self.d:
+                raise Exception('y must have {} columns'.format(self.d))
+            
+        self.y = np.copy(y)
+        
+    
+    def set_param_vec(self, paramvec):
+        
+        paramMat = self.paramMatToparamVec(paramvec)
+        self.set_param_Mat(paramMat)
+        
+    def set_param_Mat(self, paramMat):
+        """
+
+           ParamMat (d x 4)
+
+            [i,0] - delta
+            [i,1] - mu  
+            [i,2] - nu  (in log)
+            [i,3] - sigma (in log)
+        """
+        
+        [nig.set_param_vec(paramMat[i,]) for i, nig in enumerate(self.NIGs)]
+    
+    def dens_dim(self, y =None, log_ = True, paramMat = None):
+        
+        if y is None:
+            y = self.y
+        
+        if paramMat is None:
+            res = np.array([nig.dens(y = y[:,i], log_ = True) for i, nig in enumerate(self.NIGs)])
+        else:
+            res = np.array([nig.dens(y = y[:,i], paramvec = paramMat[i, ] ,log_ = True) for i, nig in enumerate(self.NIGs)])
+        
+        if log_ is True:
+            return res
+        else:
+            return np.exp(res)
+    
+    def dens(self, y =None , log_ = True, paramMat = None):
+        """
+            computes the joint density
+        """
+        res = self.dens_dim(y = y, log_ = True, paramMat = paramMat)
+        res = np.sum(res, 1)
+        
+        if y is None:
+            y = self.y
+
+        if log_ is True:
+            return res
+        else:
+            return np.exp(res)
+        
+    def __call__(self, paramvec = None, y = None):
+        """
+            used for optimization
+            paramvec - (d * 4 x 1)
+        """
+        paramMat = self.paramMatToparamVec(paramvec)
+        return self.dens(paramMat = paramMat, y = y)
+    
+    def paramMatToparamVec(self, paramvec):
+        
+        if paramvec is None:
+            return None
+        return  paramvec.reshape((self.d, 4))
+    
+    def simulate(self, n = 1, paramMat = None):
+        """
+            simulating n random variables from prior
+        """
+        
+        if paramMat is None:
+            X = np.array([nig.simulate(n = n ) for i, nig in enumerate(self.NIGs)])
+        else:
+            X = np.array([nig.simulate(n = n, paramvec = paramMat[i, ] ) for i, nig in enumerate(self.NIGs)])
+    
+        return X
+    
 class multivariateNIG(object):
     """
         multivariate nig can be generated from
