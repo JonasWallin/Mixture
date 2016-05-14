@@ -165,7 +165,7 @@ class NIG(object):
         V = nu * invgauss.rvs( 1. / nu , size= (n,1) )
         Z = npr.randn(n,1)
         X = (delta - mu) + mu * V + sigma * np.sqrt(V) * Z
-        
+        X = X.flatten()
         return X
         
         
@@ -178,25 +178,31 @@ class multi_univ_NIG(object):
     
     def __init__(self, d = None, param = None, paramvec = None):
     
+    
+    
+        self.NIGs = None
+        self.k    = None
         if param is not None:
             
-            d = len(param)
+            self.d = len(param)
+            d = self.d
+            self.set_objects()
             self.set_param(param)
             
         elif paramvec is not None:
             
-            d = paramvec.shape[0]
+            self.d = np.int(paramvec.flatten().shape[0]/4.)
+            d = self.d
+            self.set_objects()
             self.set_param_vec(paramvec)
             
-        self.NIGs = None
-        self.k    = None
         
         if d is not None:
             self.d = d
             
             self.k     = 4  * d 
-        
-            self.set_objects()
+            if self.NIGs is None:
+                self.set_objects()
     
     def set_objects(self, d = None):
         """
@@ -254,8 +260,36 @@ class multi_univ_NIG(object):
         
         [nig.set_param_vec(paramMat[i,]) for i, nig in enumerate(self.NIGs)]
     
-    def dens_dim(self, y =None, log_ = True, paramMat = None):
+    
+    def dens_d(self, dim, y = None, log_ = True, paramMat = None, paramvec = None):
+        """
+            evaluetes density at dim 
         
+        """
+        if paramvec is not None:
+            paramMat = self.paramMatToparamVec(paramvec)
+            
+            
+        if y is None:
+            y = self.y
+            
+        if len(y.shape) > 1 and (y.shape[1] > 1):
+            y_ = y[:,dim]
+        else:
+            y_ = y
+        if paramMat is None:
+            res = self.NIGs[dim].dens(y = y_, log_ = log_) 
+        else:
+            res = self.NIGs[dim].dens(y = y_, log_ = log_, paramvec = paramMat[dim, ]) 
+            
+        return res
+    
+    def dens_dim(self, y =None, log_ = True, paramMat = None, paramvec = None):
+        
+        
+        if paramvec is not None:
+            paramMat = self.paramMatToparamVec(paramvec)
+            
         if y is None:
             y = self.y
         
@@ -265,11 +299,11 @@ class multi_univ_NIG(object):
             res = np.array([nig.dens(y = y[:,i], paramvec = paramMat[i, ] ,log_ = True) for i, nig in enumerate(self.NIGs)])
         
         if log_ is True:
-            return res
+            return res.transpose()
         else:
-            return np.exp(res)
+            return np.exp(res.transpose())
     
-    def dens(self, y =None , log_ = True, paramMat = None):
+    def density(self, y =None , log_ = True, paramMat = None):
         """
             computes the joint density
         """
@@ -289,8 +323,10 @@ class multi_univ_NIG(object):
             used for optimization
             paramvec - (d * 4 x 1)
         """
+        if self.d is None:
+            self.d = y.shape[1]
         paramMat = self.paramMatToparamVec(paramvec)
-        return self.dens(paramMat = paramMat, y = y)
+        return self.density(paramMat = paramMat, y = y)
     
     def paramMatToparamVec(self, paramvec):
         
@@ -298,15 +334,17 @@ class multi_univ_NIG(object):
             return None
         return  paramvec.reshape((self.d, 4))
     
-    def simulate(self, n = 1, paramMat = None):
+    def simulate(self, n = 1, paramMat = None, paramvec = None):
         """
             simulating n random variables from prior
         """
-        
+        if paramvec is not None:
+            paramMat = self.paramMatToparamVec(paramvec)
+            
         if paramMat is None:
-            X = np.array([nig.simulate(n = n ) for i, nig in enumerate(self.NIGs)])
+            X = np.array([nig.simulate(n = n ) for i, nig in enumerate(self.NIGs)]).transpose()
         else:
-            X = np.array([nig.simulate(n = n, paramvec = paramMat[i, ] ) for i, nig in enumerate(self.NIGs)])
+            X = np.array([nig.simulate(n = n, paramvec = paramMat[i, ] ) for i, nig in enumerate(self.NIGs)]).transpose()
     
         return X
     

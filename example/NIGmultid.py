@@ -24,7 +24,7 @@ if __name__ == "__main__":
     #plt.show()
 
     multiObj = mNIG(d = 2)
-    multiObj.set_data( np.hstack((Y_1, Y_2)))
+    multiObj.set_data(np.vstack((Y_1, Y_2)).transpose())
 
 
     def f(x):
