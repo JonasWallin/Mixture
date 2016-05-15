@@ -116,8 +116,8 @@ class mixtured(object):
             raise Exception('need to set paramvec')
         
         s = 0
-        alpha  = np.hstack((0, paramvec[s:(self.d-1)]))
-        s     += self.d-1
+        alpha  = np.hstack((0, paramvec[s:(self.K-1)]))
+        s     += self.K-1
         alpha -= np.log(np.sum( np.exp(alpha))) 
         
         logf  = np.zeros((self.n, self.d))
@@ -157,8 +157,8 @@ class mixtured(object):
         
         n = len(y_)
         s = 0
-        alpha = np.hstack((0, paramvec[s:(self.d-1)]))
-        s += self.d-1
+        alpha = np.hstack((0, paramvec[s:(self.K-1)]))
+        s += self.K-1
         alpha -= np.log(np.sum( np.exp(alpha))) 
         
         logf  = np.zeros((n, 1))
