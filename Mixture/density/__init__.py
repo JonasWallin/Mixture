@@ -1,4 +1,5 @@
-from .purepython.NIG import NIG
-from .purepython.NIG import multi_univ_NIG as mNIG
+from .purepython.NIG import NIG as NIGpy
+from .NIG import NIG
+from .NIG import multi_univ_NIG as mNIG
 
 

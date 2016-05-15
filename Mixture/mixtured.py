@@ -155,12 +155,13 @@ class mixtured(object):
         if paramvec is None:
             raise Exception('need to set paramvec')
         
+        n = len(y_)
         s = 0
         alpha = np.hstack((0, paramvec[s:(self.d-1)]))
         s += self.d-1
         alpha -= np.log(np.sum( np.exp(alpha))) 
         
-        logf  = np.zeros((self.n, 1))
+        logf  = np.zeros((n, 1))
         for i, den in enumerate(self.dens):
             logf[:,0] += np.exp(den.dens_d( dim = dim, y = y_, paramvec = paramvec[s:(s + den.k)]) + alpha[i])
             s += den.k

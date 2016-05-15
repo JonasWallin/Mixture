@@ -12,6 +12,10 @@ from setuptools import setup, Extension
 #		from setuptools.core import setup, Extension
 #	except ImportError:
 #		from distutils.core import setup, Extension
+
+include_dirs = [get_include(),
+               #  '/usr/include', '/usr/local/include',
+                '/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/']
 		
 metadata = dict(
 	  name='Mixture',
@@ -28,10 +32,16 @@ metadata = dict(
       packages=['Mixture',
                 'Mixture.Bayesflow',
                 'Mixture.density',
-                'Mixture.density.purepython'],
-      package_dir={'Mixture': 'Mixture/',
-                   'Mixture.Bayesflow': 'Mixture/Bayesflow',
-                   'Mixture.density': 'Mixture/density',
-                   'Mixture.density.purepython':'Mixture/density/purepython'})
+                'Mixture.density.purepython',
+                'Mixture.util'],
+        ext_modules = [Extension("Mixture.util.cython_Bessel",sources=["Mixture/util/cython_Bessel.pyx", "Mixture/util/c/bessel.c"],
+                       include_dirs = include_dirs,
+                        #libraries=['gfortran','m','cblas','clapack'],
+                       language='c')],
+      package_dir={'Mixture'                   : 'Mixture/',
+                   'Mixture.Bayesflow'         : 'Mixture/Bayesflow',
+                   'Mixture.density'           : 'Mixture/density',
+                   'Mixture.density.purepython':'Mixture/density/purepython',
+                   'Mixture.util'              : 'Mixture/util'})
 
 setup(**metadata)

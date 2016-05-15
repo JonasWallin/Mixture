@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sp
 import numpy.random as npr
-n  = 1000
+n  = 100000
 
 
 if __name__ == "__main__":
