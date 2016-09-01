@@ -39,5 +39,6 @@ if __name__ == "__main__":
     x_2 =np.linspace(np.min(Y_2),np.max(Y_2), num = 1000)
     x = np.vstack((x_1, x_2)).transpose()
     dens = multiObj.dens_dim(y = x, log_ = False)
-    axarr[0].plot(x_1, dens[0,:])
-    axarr[1].plot(x_2, dens[1,:])
+    axarr[0].plot(x_1, dens[:, 0])
+    axarr[1].plot(x_2, dens[:, 1])
+    plt.show()
