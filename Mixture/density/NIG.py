@@ -74,6 +74,7 @@ class NIG(NIGpy):
     def __call__(self, paramvec = None, y = None):
         
         return self.dens(paramvec = paramvec, y = y)
+    
 class multi_univ_NIG(object):   
     """
         for d-dimensional object where each dimension is iid
