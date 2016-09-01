@@ -10,6 +10,8 @@ from __future__ import division
 import numpy as np
 import copy as cp
 import numpy.random as npr
+from scipy.misc import logsumexp
+
 class mixtured(object):
     """
         the object consits of d one dimensional densities (class).
@@ -130,8 +132,7 @@ class mixtured(object):
             return logf
         else:
             return np.exp(logf)
-    
-    
+
     def density_1d(self, dim, y = None, paramvec = None, log = True):
         """
             evalutes one dimension of the density
@@ -171,8 +172,62 @@ class mixtured(object):
             return logf
         else:
             return np.exp(logf)
-        
-        
+
+    def weights(self, paramvec=None, log=True):
+        if paramvec is None:
+            paramvec = self.paramvec
+
+        if paramvec is None:
+            raise Exception('need to set paramvec')
+
+        s = 0
+        alpha  = np.hstack((0, paramvec[s:(self.K-1)]))
+        s     += self.K-1
+        alpha -= np.log(np.sum( np.exp(alpha)))
+
+        pik = np.zeros((self.K, self.n, self.d))
+        for i, den in enumerate(self.dens):
+            pik[i, :, :] = den.dens_dim(y=self.y, paramvec=paramvec[s:(s + den.k)]) + alpha[i]
+            s += den.k
+
+        pik -= logsumexp(pik, axis=0)[np.newaxis, :, :]
+
+        if log:
+            return pik
+        else:
+            return np.exp(pik)
+
+    def sample_allocations(self, paramvec=None):
+        pik = self.weights(paramvec, log=False)
+        P = np.cumsum(pik, axis=0)
+        U = np.random.rand(self.n, self.d)
+        alloc = np.zeros((self.n, self.d), dtype=np.int)
+        for k in range(self.K-1):
+            alloc[U > P[k, :, :]] = k+1
+        return alloc
+
+    def dens_componentwise(self, paramvec=None, log=True):
+        """
+            Component-wise densities
+        """
+        if paramvec is None:
+            paramvec = self.paramvec
+
+        if paramvec is None:
+            raise Exception('need to set paramvec')
+
+        s = self.K-1
+
+        logfk = np.zeros((self.K, self.n, self.d))
+        for i, den in enumerate(self.dens):
+            logfk[i, :, :] = den.dens_dim(y=self.y, paramvec=paramvec[s:(s + den.k)])
+            s += den.k
+
+        if log:
+            return logfk
+        else:
+            return np.exp(logfk)
+
     def __call__(self, paramvec = None):
         """
             paramavec (d * k + (d-1) x 1) the prior vectors in matrix format
