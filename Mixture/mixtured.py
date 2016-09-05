@@ -75,8 +75,8 @@ class mixtured(object):
         
         self.paramvec = np.copy(paramvec)
         s = 0
-        self.alpha = np.hstack((0, paramvec[s:(self.d-1)]))
-        s += self.d-1
+        self.alpha = np.hstack((0, paramvec[s:(self.K-1)]))
+        s += self.K-1
         self.alpha -= np.log(np.sum( np.exp(self.alpha))) 
         for  den in self.dens:
             den.set_param_vec(paramvec = paramvec[s:(s + den.k)]) 
@@ -185,12 +185,17 @@ class mixtured(object):
         s     += self.K-1
         alpha -= np.log(np.sum( np.exp(alpha)))
 
-        pik = np.zeros((self.K, self.n, self.d))
-        for i, den in enumerate(self.dens):
-            pik[i, :, :] = den.dens_dim(y=self.y, paramvec=paramvec[s:(s + den.k)]) + alpha[i]
-            s += den.k
+        # pik = np.zeros((self.K, self.n, self.d))
+        # for i, den in enumerate(self.dens):
+        #     pik[i, :, :] = den.dens_dim(y=self.y, paramvec=paramvec[s:(s + den.k)]) + alpha[i]
+        #     s += den.k
+        # pik -= logsumexp(pik, axis=0)[np.newaxis, :, :]
 
-        pik -= logsumexp(pik, axis=0)[np.newaxis, :, :]
+        pik = np.zeros((self.K, self.n))
+        for i, den in enumerate(self.dens):
+            pik[i, :] = np.sum(den.dens_dim(y=self.y, paramvec=paramvec[s:(s + den.k)]), axis=1) + alpha[i]
+            s += den.k
+        pik -= logsumexp(pik, axis=0)[np.newaxis, :]
 
         if log:
             return pik
@@ -198,12 +203,19 @@ class mixtured(object):
             return np.exp(pik)
 
     def sample_allocations(self, paramvec=None):
+        # pik = self.weights(paramvec, log=False)
+        # P = np.cumsum(pik, axis=0)
+        # U = np.random.rand(self.n, self.d)
+        # alloc = np.zeros((self.n, self.d), dtype=np.int)
+        # for k in range(self.K-1):
+        #     alloc[U > P[k, :, :]] = k+1
+        # return alloc
         pik = self.weights(paramvec, log=False)
         P = np.cumsum(pik, axis=0)
-        U = np.random.rand(self.n, self.d)
-        alloc = np.zeros((self.n, self.d), dtype=np.int)
+        U = np.random.rand(self.n)
+        alloc = np.zeros((self.n,), dtype=np.int)
         for k in range(self.K-1):
-            alloc[U > P[k, :, :]] = k+1
+            alloc[U > P[k, :]] = k+1
         return alloc
 
     def dens_componentwise(self, paramvec=None, log=True):
