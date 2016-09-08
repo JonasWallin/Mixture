@@ -18,13 +18,13 @@ if __name__ == "__main__":
 
     n = 10000
     K = 6
-    d = 2
+    d = 3
 
     flowdir = '/Users/johnsson/Dropbox/FlowCap (2)/'
     datafile = flowdir+'data/labex/preprocessed/panel1_v3/week 51/donor 015panel 1 V1LX12012-12-17.001_tcells.npy'
     Y = np.load(datafile).astype(np.float_)
     print "Y.shape = {}".format(Y.shape)
-    Y = Y[np.random.choice(range(Y.shape[0]), n, replace=False), :][:, (9, 7)]
+    Y = Y[np.random.choice(range(Y.shape[0]), n, replace=False), :][:, (9, 7, 5)]
     Y = Y[(Y[:, 0] < np.percentile(Y[:, 0], 99)) &
           (Y[:, 1] < np.percentile(Y[:, 1], 99)) &
           (Y[:, 0] > -2000) & (Y[:, 1] > -2000), :]
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     mixObj.set_data(Y)
     x_1 = np.linspace(np.min(Y[:, 0]), np.max(Y[:, 0]), num=1000)
     x_2 = np.linspace(np.min(Y[:, 1]), np.max(Y[:, 1]), num=1000)
-    x_is = [x_1, x_2]
+    x_is = [np.linspace(np.min(Y[:, dd]), np.max(Y[:, dd]), num=1000) for dd in range(d)]
     #plt.hist2d(Y[:, 0], Y[:, 1], bins=200, norm=colors.LogNorm(), vmin=1)
     #plt.show()
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     allocations = mixObj.sample_allocations()
     dens1 = mixObj.density_1d(dim=0, y=x_1)
     dens2 = mixObj.density_1d(dim=1, y=x_2)
-    dens_is = [dens1, dens2]
+    dens_is = [mixObj.density_1d(dim=dd, y=x_is[dd]) for dd in range(d)]
     fig, axarr = plt.subplots(2, 2)
     comp_colors = ['blue', 'green', 'yellow', 'pink', 'grey', 'purple']
     axarr[0, 0].hist(Y[:, 0], 200, normed=True, histtype='stepfilled', alpha=0.2)
