@@ -9,7 +9,8 @@ import numpy.random as npr
 from scipy.stats import invgauss
 
 
-#TODO: change parametrization so that the paramtrization has mean, variance , shape, kurtoties
+
+
 class NIG(object):
     """
         Univariate density generated from
@@ -88,6 +89,151 @@ class NIG(object):
         self.sigma  = np.exp(self.sigma)
         self.nu     = np.exp(self.nu)
     
+    def get_param(self):
+        """
+            get the parameters
+        """
+        out = {"nu":np.log(self.nu), 
+               "mu": self.mu,
+               "delta": self.delta,
+               "sigma": np.log(self.sigma)}
+        return(out)
+    
+    def get_param_vec(self):
+        """
+            get the parameters in vector format
+        """
+        
+        out = np.array([self.delta, self.mu, np.log(self.nu), np.log(self.sigma)])
+        return(out)
+       
+    def Mstep(self, EV, EiV, p = None, y = None, paramvec = None, update = [1,1,1,1]):
+        """
+            Takes an Mstep in a EM algorithm
+            
+            log(l(\theta|Y) ) = \sum_i p_i (\log(\sigma ^{-1}) - (Y_i - delta + mu - mu V_i)^2/(2 \sigma^2 V_i) 
+                                 - \log(\nu)/2 - V_i^{-1}/2 \nu - V_i/2 \nu + \nu )
+                                 + C   
+            
+            EV       - (n x 1) the expectation of the latent variance parameter
+            EiV      - (n x 1) the expectation of the latent 1/variance parameter
+            p        - (n x 1) weight of the observations p_i \in [0,1]
+            y        - (n x 1) the observations
+            paramvec - (k x 1) the parameter to evalute the density
+            update   - (k x 1) which of the parameters should be updated, order
+                               delta, mu, nu ,sigma 
+        """
+    
+    
+        if y is None:
+            y = self.y
+    
+        if p is None:
+            p = np.ones((max([1, np.prod(np.shape(y))]), 1))
+                                 
+        delta, mu, nu, sigma = self._paramvec(paramvec)
+        
+        # 
+        sum_p  = np.sum(p)
+        p_EV   = p.flatten() * EV.flatten()
+        p_EiV  = p.flatten() * EiV.flatten()
+        sum_pEiV  = np.sum(p_EiV)
+        sum_pEV   = np.sum(p_EV)
+        sum_pY    = np.sum(np.multiply(y.flatten(), p.flatten()))
+        sum_pYEiv = np.sum(np.multiply(y.flatten() , p_EiV.flatten()))
+        #delta, mu step
+        # the log likelhiood quadratic function
+        #- \frac{1}{2} [\delta, mu]^T Q  [\delta, mu] +  b^T [\delta, mu]
+        Q = np.array([[sum_pEiV,            (-sum_pEiV + sum_p)], 
+                      [ (-sum_pEiV + sum_p),  sum_pEiV  + sum_pEV - 2 * sum_p]])
+        b = np.array([ [sum_pYEiv], [-sum_pYEiv + sum_pY]])
+        Qinvb = np.linalg.solve(Q, b) 
+        
+        if update[0] > 0:
+            delta = Qinvb.flatten()[0]
+        if update[1] > 0:
+            mu   = Qinvb.flatten()[1]
+        
+        # sigma step
+        
+        # 
+        if update[3] > 0:
+            delta_mu = np.array([[delta],[mu]])
+            H = np.dot( -0.5*np.dot(delta_mu.transpose(), Q) + b.transpose(), delta_mu) - 0.5*np.sum(np.multiply(y.flatten()**2 , p_EiV.flatten()))  
+            sigma = np.sqrt(-2*H[0,0]/sum_p)
+        
+        
+        # nu step
+        if update[2]  > 0:
+            nu = sum_p / (np.sum(p_EV) + sum_pEiV - 2*sum_p )
+               
+        return [delta, mu, np.log(nu), np.log(sigma)]
+    
+    def EMstep(self, 
+               y = None, 
+               paramvec = None,  
+               update  = [1,1,1,1],
+               p   = None,
+               compute_E = True, 
+               EV = None, 
+               EiV = None,
+               update_param = True):
+        
+        """
+            Takes an Mstep in a EM algorithm
+            y            - (n x 1) the observations
+            p            - (n x 1) weight of the observations p_i \in [0,1] 
+            paramvec     - (k x 1) the parameter to evalute the density
+            update       - (k x 1) which of the parameters should be updated, order
+                               delta, mu, nu ,sigma 
+            compute_E    - (bool) Compute the expectations
+            EV           - (n x 1) the expectation of the latent variance parameter
+            EiV          - (n x 1) the expectation of the latent 1/variance parameter
+            update_param - (bool) update the parameters in the object
+        """
+        
+        if compute_E:
+            EV, EiV = self.EV(y, paramvec)
+        
+        
+        res = self.Mstep(EV, EiV, p = p, y = y, paramvec = paramvec, update = update)
+        if update_param:
+            self.set_param_vec(res)
+        
+        return res
+        
+        
+    def EV(self, y = None, paramvec = None):
+        """
+            compute the EV|y and EV^{-1}|y where V_i is the variance component of y_i
+            Used for EM algorithm
+        
+            y        - (n x 1) the observations
+            paramvec - (k x 1) the parameter to evalute the density
+        """
+        
+        
+        
+        if y is None:
+            y = self.y
+        delta, mu, nu, sigma = self._paramvec(paramvec)
+        a = nu + mu**2 /sigma**2
+        delta_mu = delta - mu
+        y_ = (y - delta_mu ) /sigma
+        b = nu + y_**2 
+        
+        sqrt_ab = np.sqrt(a * b)
+        K1 = sps.kn(1, sqrt_ab) # really -1 but K_-1(x) = K_1(x) 
+        K0 = sps.kn(0, sqrt_ab)
+        sqrt_a_div_b = np.sqrt(a/b)
+        EV = np.zeros((np.int(np.max([1,np.prod(np.shape(y))])), 1))
+        EV[:,0]         = K0 / K1
+        EiV = np.zeros_like(EV)
+        EiV[:,0]             = ( K0 + 2 * K1/sqrt_ab) /K1
+        EV[:, 0]          /= sqrt_a_div_b
+        EiV[:, 0]         *= sqrt_a_div_b
+        
+        return EV, EiV
     
     def dens(self, y =None , log_ = True, paramvec = None):
         """
@@ -164,8 +310,8 @@ class NIG(object):
         Z = npr.randn(n,1)
         X = (delta - mu) + mu * V + sigma * np.sqrt(V) * Z
         X = X.flatten()
+        self.V_sim = V
         return X
-        
         
 
 
