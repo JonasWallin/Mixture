@@ -7,7 +7,7 @@ import unittest
 
 
 from Mixture.density import NIG
-from Mixture.density import muNIG as muNIG
+from Mixture.density import mNIG as muNIG
 import scipy as sp
 import numpy.random as npr
 import scipy.special as sps
