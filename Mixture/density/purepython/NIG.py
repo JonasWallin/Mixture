@@ -8,6 +8,235 @@ import numpy as np
 import numpy.random as npr
 from scipy.stats import invgauss
 
+class multi_univ_NIG(object):   
+    """
+        for d-dimensional object where each dimension is iid
+    """
+    
+    def __init__(self, d = None, param = None, paramvec = None):
+    
+    
+    
+        self.NIGs = None
+        self.k    = None
+        if param is not None:
+            
+            self.d = len(param)
+            d = self.d
+            self.set_objects()
+            self.set_param(param)
+            
+        elif paramvec is not None:
+            
+            self.d = np.int(paramvec.flatten().shape[0]/4.)
+            d = self.d
+            self.set_objects()
+            self.set_param_vec(paramvec)
+            
+        
+        if d is not None:
+            self.d = d
+            
+            self.k     = 4  * d 
+            if self.NIGs is None:
+                self.set_objects()
+    
+    def set_objects(self, d = None):
+        """
+            sets up the basic objects
+        """
+        if d is None:
+            d = self.d
+            
+        if d is None:
+            raise Exception('dimesnion must be set before set_objects')
+        
+        self.NIGs = [ NIG() for i in range(d)]  # @UnusedVariable
+      
+    def set_param(self, paramList):
+        """
+
+            paramList - list of dictonary contaning:
+
+            delta  - (1x1) mean
+            mu     - (1x1) assymetric parameter
+            sigma  - (1x1) the std (in log format)
+            nu     - (1)   shape parameter (in log format)
+        """
+        
+        [nig.set_param(paramList[i]) for i, nig in enumerate(self.NIGs)]
+        
+    def __str__(self):
+        
+        str_ = ""
+        for i in range(self.d):
+            str_ +="{}:".format(i) + self.NIGs[i].__str__() + "\n"
+        return str_   
+    
+    def set_data(self, y):
+        """
+            setting data
+            y - ( n x d) numpy array
+        """
+        if self.d is not None:
+            if y.shape[1] != self.d:
+                raise Exception('y must have {} columns'.format(self.d))
+            
+        self.y = np.copy(y)
+        
+    
+    def set_param_vec(self, paramvec):
+        
+        paramMat = self.paramMatToparamVec(paramvec)
+        self.set_param_Mat(paramMat)
+        
+    def set_param_Mat(self, paramMat):
+        """
+
+           ParamMat (d x 4)
+
+            [i,0] - delta
+            [i,1] - mu  
+            [i,2] - nu  (in log)
+            [i,3] - sigma (in log)
+        """
+        
+        [nig.set_param_vec(paramMat[i,]) for i, nig in enumerate(self.NIGs)]
+ 
+    def EMstep(self, 
+               y = None, 
+               paramMat = None, 
+               paramvec = None,
+               update  = [1,1,1,1],
+               p   = None,
+               update_param = True):
+        
+        """
+            Takes an Mstep in a EM algorithm
+            y            - (n x 1) the observations
+            p            - (n x d) weight of the observations p_i \in [0,1] 
+            paramvec     - (d*k x 1) the parameter to evalute the density
+            paramvec     - (d   x k) the parameter to evalute the density
+            update       - (k x 1) which of the parameters should be updated, order
+                               delta, mu, nu ,sigma 
+            compute_E    - (bool) Compute the expectations
+            update_param - (bool) update the parameters in the object
+        """
+        if paramvec is not None:
+            paramMat = self.paramMatToparamVec(paramvec)
+            
+            
+        if y is None:
+            y = self.y
+            
+            
+        p_ = None
+        
+        out_ = np.zeros((self.d, 4))
+            
+        for i in range(self.d): 
+            if p is not None:
+                p_ = p[:,i]
+            if paramMat is not None:
+                paramvec = paramMat[i, ]
+            res = self.NIGs[i].EMstep(y = y[:,i],
+                                p = p_,
+                                paramvec = paramvec,
+                                update = update,
+                                update_param = update_param) 
+        
+            out_[i,:] = res
+        
+        
+        return out_
+       
+    
+    def dens_d(self, dim, y = None, log_ = True, paramMat = None, paramvec = None):
+        """
+            evaluetes density at dim 
+        
+        """
+        if paramvec is not None:
+            paramMat = self.paramMatToparamVec(paramvec)
+            
+            
+        if y is None:
+            y = self.y
+            
+        if len(y.shape) > 1 and (y.shape[1] > 1):
+            y_ = y[:,dim]
+        else:
+            y_ = y
+        if paramMat is None:
+            res = self.NIGs[dim].dens(y = y_, log_ = log_) 
+        else:
+            res = self.NIGs[dim].dens(y = y_, log_ = log_, paramvec = paramMat[dim, ]) 
+            
+        return res
+    
+    def dens_dim(self, y =None, log_ = True, paramMat = None, paramvec = None):
+        
+        
+        if paramvec is not None:
+            paramMat = self.paramMatToparamVec(paramvec)
+            
+        if y is None:
+            y = self.y
+        
+        if paramMat is None:
+            res = np.array([nig.dens(y = y[:,i], log_ = True) for i, nig in enumerate(self.NIGs)])
+        else:
+            res = np.array([nig.dens(y = y[:,i], paramvec = paramMat[i, ] ,log_ = True) for i, nig in enumerate(self.NIGs)])
+        
+        if log_ is True:
+            return res.transpose()
+        else:
+            return np.exp(res.transpose())
+    
+    def density(self, y =None , log_ = True, paramMat = None):
+        """
+            computes the joint density
+        """
+        res = self.dens_dim(y = y, log_ = True, paramMat = paramMat)
+        res = np.sum(res, 1)
+        
+        if y is None:
+            y = self.y
+
+        if log_ is True:
+            return res
+        else:
+            return np.exp(res)
+        
+    def __call__(self, paramvec = None, y = None):
+        """
+            used for optimization
+            paramvec - (d * 4 x 1)
+        """
+        if self.d is None:
+            self.d = y.shape[1]
+        paramMat = self.paramMatToparamVec(paramvec)
+        return self.density(paramMat = paramMat, y = y)
+    
+    def paramMatToparamVec(self, paramvec):
+        
+        if paramvec is None:
+            return None
+        return  paramvec.reshape((self.d, 4))
+    
+    def simulate(self, n = 1, paramMat = None, paramvec = None):
+        """
+            simulating n random variables from prior
+        """
+        if paramvec is not None:
+            paramMat = self.paramMatToparamVec(paramvec)
+            
+        if paramMat is None:
+            X = np.array([nig.simulate(n = n ) for i, nig in enumerate(self.NIGs)]).transpose()
+        else:
+            X = np.array([nig.simulate(n = n, paramvec = paramMat[i, ] ) for i, nig in enumerate(self.NIGs)]).transpose()
+    
+        return X
 
 
 
@@ -154,12 +383,13 @@ class NIG(object):
         if update[1] > 0:
             mu   = Qinvb.flatten()[1]
         
-        # sigma step
         
+        # sigma step
         # 
         if update[3] > 0:
             delta_mu = np.array([[delta],[mu]])
             H = np.dot( -0.5*np.dot(delta_mu.transpose(), Q) + b.transpose(), delta_mu) - 0.5*np.sum(np.multiply(y.flatten()**2 , p_EiV.flatten()))  
+            
             sigma = np.sqrt(-2*H[0,0]/sum_p)
         
         
@@ -225,11 +455,14 @@ class NIG(object):
         sqrt_ab = np.sqrt(a * b)
         K1 = sps.kn(1, sqrt_ab) # really -1 but K_-1(x) = K_1(x) 
         K0 = sps.kn(0, sqrt_ab)
+        
         sqrt_a_div_b = np.sqrt(a/b)
         EV = np.zeros((np.int(np.max([1,np.prod(np.shape(y))])), 1))
         EV[:,0]         = K0 / K1
+        EV[K1==0, 0]     = 1.
         EiV = np.zeros_like(EV)
-        EiV[:,0]             = ( K0 + 2 * K1/sqrt_ab) /K1
+        EiV[:,0]          = ( K0 + 2 * K1/sqrt_ab) /K1
+        EiV[K1==0, 0]     = 1 + 2/sqrt_ab[K1==0]
         EV[:, 0]          /= sqrt_a_div_b
         EiV[:, 0]         *= sqrt_a_div_b
         
@@ -292,6 +525,11 @@ class NIG(object):
             
         return delta, mu, nu, sigma
     
+    def __str__(self):
+        
+        str_ = " delta = {0:+2.2}, mu = {1:+2.2}, nu = {2:+2.2}, sigma = {3:+2.2}".format(self.delta, self.mu, self.nu, self.sigma)
+        return str_
+    
     def __call__(self, paramvec = None, y = None):
         
         return self.dens(paramvec = paramvec, y = y)
@@ -316,42 +554,40 @@ class NIG(object):
 
 
 
-class multivariateNIG(object):
-    """
-        multivariate nig can be generated from
-
-        Y = \delta - mu + \mu V  + \sqrt{V} \Sigma^{1/2} Z 
-        Z = N(0,I)
-        V = IG(\nu, \nu)
-        density:
-
-            f(v) \propto \nu^{1/2} v^{-3/2} e^{- \nu/(2V) - \nu V/2   + \nu} 
-            f(y) = 2\sqrt{\nu} |\Sigma|^{-1/2} (2\pi)^{d+1/2} \exp(\nu) ...
-                   \exp( (y - \delta + \mu)^T \Sigma^{-1} \mu )    ...
-                   (a/b)^{(d+1)/2} K_{(d+1)/2} ( \sqrt{ab})
-            a = \mu^T \Sigma^{-1} \mu + \nu
-            b = (x -  \delta + \mu)^T \Sigma^{-1} (x -  \delta + \mu) + \nu
-    """
-
-
-    def __init__(self, d = None):
-
-
-        self.d = None
-        pass
-
-
-    def set_prior(self, prior):
-        """
-
-            priror - dictonary contaning:
-
-            delta - (dx1) mean
-            mu    - (dx1) assymetric parameter
-            Sigma - (dxd) covariance 
-            nu    - (1)   shape parameter
-        """
-
-        pass
-
-    
+# class multivariateNIG(object):
+#     """
+#         multivariate nig can be generated from
+# 
+#         Y = \delta - mu + \mu V  + \sqrt{V} \Sigma^{1/2} Z 
+#         Z = N(0,I)
+#         V = IG(\nu, \nu)
+#         density:
+# 
+#             f(v) \propto \nu^{1/2} v^{-3/2} e^{- \nu/(2V) - \nu V/2   + \nu} 
+#             f(y) = 2\sqrt{\nu} |\Sigma|^{-1/2} (2\pi)^{d+1/2} \exp(\nu) ...
+#                    \exp( (y - \delta + \mu)^T \Sigma^{-1} \mu )    ...
+#                    (a/b)^{(d+1)/2} K_{(d+1)/2} ( \sqrt{ab})
+#             a = \mu^T \Sigma^{-1} \mu + \nu
+#             b = (x -  \delta + \mu)^T \Sigma^{-1} (x -  \delta + \mu) + \nu
+#     """
+# 
+# 
+#     def __init__(self, d = None):
+# 
+# 
+#         self.d = None
+#         pass
+# 
+# 
+#     def set_prior(self, prior):
+#         """
+# 
+#             priror - dictonary contaning:
+# 
+#             delta - (dx1) mean
+#             mu    - (dx1) assymetric parameter
+#             Sigma - (dxd) covariance 
+#             nu    - (1)   shape parameter
+#         """
+# 
+#         pass    
