@@ -53,6 +53,41 @@ class Test(unittest.TestCase):
         
         Y = mixObj.sample(n = 10)  # @UnusedVariable
 
+    def test_simple_estimate(self):
+        """
+            estimation on very well seperated dta set
+        """
+        K = 2
+        d = 2
+        iteration = 50
+        npr.seed(11)
+        mixObj = mixOneDims(K=K, d=d)
+        
+        mixObj.set_densites([mNIG(d=d) for k in range(K)])
+        paramMat_true = [np.array([[1.1, 1.12, 0.1, 0],
+                                     [-1,  0,2 , -4] ]),
+                    np.array([[-2, 0, 0.3, 0],
+                                     [1,  0, 2 , -4] ])]
+        alpha_true = [0]
+        mixObj.set_paramMat(alpha = alpha_true,paramMat = paramMat_true )
+        
+        
+        Y = mixObj.sample(n = 2000)
+        
+        
+       
+        mixObj.set_data(Y)
+        
+        paramMat = [npr.randn(2,4),npr.randn(2,4)]
+        paramMat[0][0,0] = 1.1 
+        paramMat[1][0,0] = -2 
+        alpha = np.array(alpha_true)
+        for i in range(iteration):
+            p, alpha, paramMat = mixObj.EMstep(alpha = alpha, paramMat = paramMat )
+        
+        
+        np.testing.assert_array_almost_equal(np.array(paramMat), np.array(paramMat_true), decimal = 0) 
+        np.testing.assert_array_almost_equal(np.array(alpha), np.array(alpha_true), decimal = 1)  
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

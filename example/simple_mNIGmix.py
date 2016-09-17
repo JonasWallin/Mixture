@@ -21,7 +21,7 @@ alpha = [0]
 mixObj.set_paramMat(alpha = alpha,paramMat = paramMat )
 
 
-Y = mixObj.sample(n = 2000)
+Y = mixObj.sample(n = 20000)
 
 
 fig, axarr = plt.subplots(2, 1)
@@ -33,13 +33,17 @@ axarr[1].hist(Y[:, 1], 200, normed=True, histtype='stepfilled', alpha=0.2)
 mixObj.set_data(Y)
 
 paramMat = [npr.randn(2,4),npr.randn(2,4)]
+for i in range(d):
+    x_0 = np.linspace(np.min(Y[:,i]), np.max(Y[:,i]), 200)
+    d_0 = mixObj.density_1d(dim = i, y = x_0, log=False, alpha = alpha, paramMat = paramMat)
+    axarr[i].plot(x_0, d_0, color='red')
 for i in range(iteration):
     p, alpha, paramMat = mixObj.EMstep(alpha = alpha, paramMat = paramMat )
     
 
 for i in range(d):
     x_0 = np.linspace(np.min(Y[:,i]), np.max(Y[:,i]), 200)
-    d_0 = mixObj.density_1d(dim = i, y = x_0, log=False)
+    d_0 = mixObj.density_1d(dim = i, y = x_0, log=False, alpha = alpha, paramMat = paramMat)
     axarr[i].plot(x_0, d_0)
 plt.show()
 
