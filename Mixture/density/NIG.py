@@ -36,13 +36,14 @@ class NIG(NIGpy):
             b =  \frac{1}{ \sigma^2 }  (x -  \delta + \mu)^2  + \nu
     """
     
-    def dens(self, y =None , log_ = True, paramvec = None):
+    def dens(self, y =None , log_ = True, paramvec = None, precompute = False):
         """
             computes the density
             
-            y        - (n x 1) densites to computed
-            log_     - (bool)  return logarithm of density
-            paramvec - (k x 1) the parameter to evalute the density
+            y          - (n x 1) densites to computed
+            log_       - (bool)  return logarithm of density
+            paramvec   - (k x 1) the parameter to evalute the density
+            precomptue - (bool) store the bessel cacululation
             
              f(y) = \sqrt{\nu} \sigma^{-1} \pi^{-1} \exp(\nu) ...
                    \exp( \frac{1}{\sigma^2}(y - \delta + \mu) \mu )    ...
@@ -68,7 +69,10 @@ class NIG(NIGpy):
         logf = y_ * ( mu / sigma)
         logf += const
         logf += 0.5 * (np.log(a) - np.log(b))
-        logf += np.log(Bessel1approx( np.array(np.sqrt(a * b)).flatten()))
+        K1 = Bessel1approx( np.array(np.sqrt(a * b)).flatten())
+        if precompute:
+            self.K1 = K1
+        logf += np.log( K1)
         
         if not log_:
             return np.exp(logf)
