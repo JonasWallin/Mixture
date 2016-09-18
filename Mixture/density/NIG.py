@@ -6,7 +6,7 @@ Created on May 15, 2016
 
 from .purepython.NIG import NIG as NIGpy
 from .purepython.NIG import multi_univ_NIG as multi_univ_NIGpy
-from Mixture.util import Bessel1approx
+from Mixture.util import Bessel1approx, Bessel0approx
 import numpy as np
 #import line_profiler
 
@@ -78,7 +78,48 @@ class NIG(NIGpy):
             return np.exp(logf)
         
         return logf
+
+    def EV(self, y = None, paramvec = None, precompute = False):
+        """
+            compute the EV|y and EV^{-1}|y where V_i is the variance component of y_i
+            Used for EM algorithm
+        
+            y          - (n x 1) the observations
+            paramvec   - (k x 1) the parameter to evalute the density
+            precompute - (bool)  is the bessel1 alredy caculated
+        """
+        
+        
+        
+        if y is None:
+            y = self.y
+        delta, mu, nu, sigma = self._paramvec(paramvec)
+        a = nu + mu**2 /sigma**2
+        delta_mu = delta - mu
+        y_ = (y - delta_mu ) /sigma
+        b = nu + y_**2 
+        
+        sqrt_ab = np.sqrt(a * b)
+        if precompute:
+            K1 = self.K1
+        else:
+            K1 = Bessel1approx(sqrt_ab) # really -1 but K_-1(x) = K_1(x) 
+            
+        K0 = Bessel0approx(sqrt_ab)
+        
+        sqrt_a_div_b = np.sqrt(a/b)
+        EV = np.zeros((np.int(np.max([1,np.prod(np.shape(y))])), 1))
+        EV[:,0]         = K0 / K1
+        EV[K1==0, 0]     = 1.
+        EiV = np.zeros_like(EV)
+        EiV[:,0]          = ( K0 + 2 * K1/sqrt_ab) /K1
+        EiV[K1==0, 0]     = 1 + 2/sqrt_ab[K1==0]
+        EV[:, 0]          /= sqrt_a_div_b
+        EiV[:, 0]         *= sqrt_a_div_b
+        
+        return EV, EiV
     
+       
     def __call__(self, paramvec = None, y = None):
         
         return self.dens(paramvec = paramvec, y = y)

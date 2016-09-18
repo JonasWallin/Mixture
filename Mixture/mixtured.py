@@ -143,6 +143,7 @@ class mixtured(object):
         p = np.zeros(self.K)
         sum_expalpha = np.sum(np.exp(alpha)) + 1
         p[0] = 1 / sum_expalpha
+        
         for i,alpha_ in enumerate(alpha):
             p[i+1] = np.exp(alpha_) / sum_expalpha
             
@@ -187,9 +188,8 @@ class mixtured(object):
         
         self.paramvec = np.copy(paramvec)
         s = 0
-        self.alpha = np.hstack((0, paramvec[s:(self.K-1)]))
+        self.alpha =  paramvec[s:(self.K-1)]
         s += self.K-1
-        self.alpha -= np.log(np.sum( np.exp(self.alpha))) 
         for  den in self.dens:
             den.set_param_vec(paramvec = paramvec[s:(s + den.k)]) 
             s += den.k
@@ -264,7 +264,7 @@ class mixtured(object):
         logf  = np.zeros((self.n, self.d))
         alpha = np.hstack((0, alpha))
         for i, den in enumerate(self.dens):
-            logf += np.exp(den.dens_dim( y = self.y,  paramMat = paramMat[i]) + alpha[i])
+            logf += p[i] * np.exp(den.dens_dim( y = self.y,  paramMat = paramMat[i]))
         
         logf = np.log(logf)
         if log == True:
@@ -412,12 +412,13 @@ class mixtured(object):
             self.alpha = self.p_to_alpha(p)
         
         paramMat_out = []
-        for i, den in enumerate(self.dens):  
-            paramMat_out.append(den.EMstep(y = y, 
-                                           p = pik[i,:].flatten(),
-                       paramMat = paramMat[i], 
-                       precompute = precompute, 
-                       update_param = update_param))
+        for i, den in enumerate(self.dens): 
+            if p[i] > 0: 
+                paramMat_out.append(den.EMstep(y = y, 
+                                               p = pik[i,:].flatten(),
+                           paramMat = paramMat[i], 
+                           precompute = precompute, 
+                           update_param = update_param))
             
         if return_paramvec:
             paramvec = self.paramMat_to_paramvec(p = p, paramMat = paramMat_out)

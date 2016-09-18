@@ -146,6 +146,7 @@ class NIG(object):
         Q = np.array([[sum_pEiV,            (-sum_pEiV + sum_p)], 
                       [ (-sum_pEiV + sum_p),  sum_pEiV  + sum_pEV - 2 * sum_p]])
         b = np.array([ [sum_pYEiv], [-sum_pYEiv + sum_pY]])
+        
         Qinvb = np.linalg.solve(Q, b) 
         
         if update[0] > 0:
@@ -454,7 +455,7 @@ class multi_univ_NIG(object):
     
     def set_param_vec(self, paramvec):
         
-        paramMat = self.paramMatToparamVec(paramvec)
+        paramMat = self.paramvecToparamMat(paramvec)
         self.set_param_Mat(paramMat)
         
     def set_param_Mat(self, paramMat):
@@ -611,16 +612,18 @@ class multi_univ_NIG(object):
         paramMat = self.paramMatToparamVec(paramvec)
         return self.density(paramMat = paramMat, y = y)
     
-    def paramvecToparamMat(self, paramMat):
-        
-        if paramMat is None:
-            return None
-        return  paramMat.reshape((self.d, 4))
-    
-    def paramMatToparamVec(self, paramvec):
+    def paramvecToparamMat(self, paramvec):
         
         if paramvec is None:
             return None
+        paramMat = np.array(paramvec)
+        return  paramMat.reshape((self.d, 4))
+    
+    def paramMatToparamVec(self, paramMat):
+        
+        if paramMat is None:
+            return None
+        paramvec = np.array(paramMat)
         return  paramvec.flatten()
     
     def simulate(self, n = 1, paramMat = None, paramvec = None):
