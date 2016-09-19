@@ -33,6 +33,20 @@ class mixtured(object):
         self.d = d
         self.dens = None
         self.alpha = None
+        self.store_attr = ['_paramvec', '_p', '_hardClass', '_loglik',
+                           '_computeProb']
+        self.EMM_iter = 3
+
+    def __call__(self, paramvec = None):
+        """
+            paramavec (d * k + (d-1) x 1) the prior vectors in matrix format
+                     (0:d-2)            :  alpha which defines the prior prob as:
+                                          \pi_i = np.exp( alpha_i) / 1 + sum(np.exp(alpha_i))
+        """
+        
+        
+        
+        return np.sum(self.density(paramvec))
         
     def set_data(self, y):
         """
@@ -51,7 +65,7 @@ class mixtured(object):
         
         
         if self.d is None:
-            self.d = np.shape(y)[2]
+            self.d = np.shape(y)[1]
         
         self.y = cp.deepcopy(y)
         self.n = np.shape(y)[0]
@@ -240,17 +254,76 @@ class mixtured(object):
         else:
             return np.exp(logfk)
 
-    def __call__(self, paramvec = None):
-        """
-            paramavec (d * k + (d-1) x 1) the prior vectors in matrix format
-                     (0:d-2)            :  alpha which defines the prior prob as:
-                                          \pi_i = np.exp( alpha_i) / 1 + sum(np.exp(alpha_i))
-        """
-        
-        
-        
-        return np.sum(self.density(paramvec))
-    
-        
-        
-                
+    @property
+    def paramvec(self):
+        return self._paramvec
+
+    @paramvec.setter
+    def paramvec(self, paramvec):
+        self._paramvec = paramvec
+        self._p = None
+        self._hardClass = None
+        self._loglik = None
+        self._computeProb = None
+
+    def storeParam(self):
+        self._storedParam = {par: getattr(self, attr) for attr in self.store_attr}
+
+    def restoreParam(self):
+        for attr in self.store_attr:
+            setattr(self, self._storedParam[attr])
+
+    @property
+    def p(self):
+        if self._p is None:
+            self._p = self.weights(log=False)
+        return self._p
+
+    @property
+    def Y(self):
+        return self.y
+
+    @property
+    def loglik(self):
+        if self._loglik is None:
+            self._loglik = np.sum(self.computeProb)
+        return self._loglik
+
+    @property
+    def F(self):
+        return self.loglik
+
+    @property
+    def hardClass(self):
+        if self._hardClass is None:
+            self._hardClass = self.sample_allocations()
+        return self._hardClass
+
+    @property
+    def computeProb(self):
+        '''
+            log likelihood pointwise
+        '''
+        if self._computeProb is None:
+            self._computeProb = self.__call__()
+        return self._computeProb
+
+    def step(self):
+        '''
+            Optimization step
+        '''
+
+        def f(x):
+            lik = - np.sum(self.p *
+                           np.sum(self.dens_componentwise(np.hstack((np.zeros(K-1), x))), axis=2))
+            if np.isnan(lik):
+                return np.inf
+            return lik
+
+        # E step
+        pi_k = np.sum(self.p, axis=1)
+
+        # M step
+        x = sp.optimize.fmin_powell(f, self.paramvec[self.K-1:], maxiter=self.EMM_iter)
+        alpha = np.log(pi_k[1:]) - np.log(pi_k[0])
+        self.set_param_vec(np.hstack((alpha.ravel(), x)))
