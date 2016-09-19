@@ -239,6 +239,95 @@ double limitK1_001(const double x)
 	return (res+ prod_);
 }
 
+double const K0P8[] = {
+					0.11593151620556186,
+					0.27898398957826176,
+					0.025267521444959137,
+					0.00084126262966468526
+					};
+double const K0C8[] ={-0.99999999997659728,
+						-0.24999957531125322,
+						 -0.015608710836632057,
+						-0.0003869991316737959};
+
+
+
+double const K0_Pupper[]= {1.1600249425076035558e+02,
+ 			2.3444738764199315021e+03,
+  			1.8321525870183537725e+04,
+   			7.1557062783764037541e+04,
+    		1.5097646353289914539e+05,
+     		1.7398867902565686251e+05,
+     		1.0577068948034021957e+05,
+     		3.1075408980684392399e+04,
+     		3.6832589957340267940e+03,
+     		1.1394980557384778174e+02};
+double const K0_Cupper[] = {9.2556599177304839811e+01,
+			  1.8821890840982713696e+03,
+			  1.4847228371802360957e+04,
+			  5.8824616785857027752e+04,
+			  1.2689839587977598727e+05,
+			  1.5144644673520157801e+05,
+			  9.7418829762268075784e+04,
+			  3.1474655750295278825e+04,
+			  4.4329628889746408858e+03,
+			  2.0013443064949242491e+02,
+			  1.0};
+double limitK0_08(const double x)
+{
+	/*
+		Bessel approximation between (0., 0.8)
+		using Abramvoich 9.6.13
+		|error| < 1e-9
+	*/
+	double res;
+	double x2 = x * x;
+	res = polyEval(x2, K0P8, 4);
+	res += log(x) * polyEval(x2, K0C8, 4);
+	return(res);
+}
+double limitK0_upper(const double x)
+{
+	/*
+		Bessel approximation between (0.8, inf)
+		using Boost approx
+		|error| < 1e-9
+	*/
+	double res;
+	double y = 1 / x;
+	res =  polyEval(y, K0_Pupper, 10);
+	res /= polyEval(y, K0_Cupper, 11);
+	res /= exp(x)* sqrt(x);
+	return(res);
+}
+
+void bessel0(const double* x, double *res, const int n)
+{
+	/*
+	 * Approximation of besselK(0, x) with absolute and relative error less then 0.5*1e-7
+	 *
+	 * x   - (n x 1) value
+	 * res - (n x 1) result vector
+	 */
+
+	for(int i = 0; i < n; i++)
+	{
+		// return error if neg!
+		// return inf if 0.
+		if(x[i] < 0)
+			res[i] = NAN;
+		else if(x[i] == 0)
+			res[i] = INFINITY;
+		else if(x[i] < 0.8)
+			res[i] = limitK0_08(x[i]);
+		else if (x[i] < 1000)
+			res[i] = limitK0_upper(x[i]);
+		else
+			res[i] = 0;
+
+	}
+
+}
 
 #ifdef __cplusplus
 }
