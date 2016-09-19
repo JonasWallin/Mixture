@@ -34,7 +34,7 @@ class SwarmOptimMixtured(SwarmOptimMixObj):
         if not self._paramvec_curr is self._mixture.paramvec:
             self.reset_precomputed()
         if self._computedProb is None:
-            self._computedProb = self._mixture.__call__()
+            self._computedProb = np.sum(self._mixture.weights(normalized=False), axis=0)
         return self._computedProb
 
     def setMutated(self, ks, points):
@@ -42,12 +42,13 @@ class SwarmOptimMixtured(SwarmOptimMixObj):
             setup new classes for the ks centered at the points
         '''
         p, alpha, paramMats = self._mixture.get_paramMat()
-        mu_mean = np.mean(np.hstack([paramMat[:, 1] for paramMat in paramMats]), axis=1)
-        sigma_mean = np.mean(np.hstack([paramMat[:, 2] for paramMat in paramMats]), axis=1)
-        nu_mean = np.mean(np.hstack([paramMat[:, 3] for paramMat in paramMats]), axis=1)
+        mu_mean = np.mean(np.vstack([paramMat[:, 1] for paramMat in paramMats]), axis=0)
+        sigma_mean = np.mean(np.vstack([paramMat[:, 2] for paramMat in paramMats]), axis=0)
+        nu_mean = np.mean(np.vstack([paramMat[:, 3] for paramMat in paramMats]), axis=0)
         p_median = np.median(p)
-        for k, point in zip(ks, points):
-            paramMats[k] = np.hstack([point.reshape(-1, 1), mu_mean, sigma_mean, nu_mean])
+        points = points.reshape(-1, self._mixture.d)
+        for i, k in enumerate(ks):
+            paramMats[k] = np.vstack([points[i, :], mu_mean, sigma_mean, nu_mean]).T
             p[k] = p_median
         p /= np.sum(p)
         self._mixture.set_paramMat(paramMats, p=p)
@@ -72,7 +73,7 @@ class SwarmOptimMixtured(SwarmOptimMixObj):
         if not self._paramvec_curr is self._mixture.paramvec:
             self.reset_precomputed()
         if self._hardClass is None:
-            self._hardClass = self.sample_allocations()
+            self._hardClass = self._mixture.sample_allocations()
         return self._hardClass
 
     @property
@@ -90,7 +91,7 @@ class SwarmOptimMixtured(SwarmOptimMixObj):
         if not self._paramvec_curr is self._mixture.paramvec:
             self.reset_precomputed()
         if self._p is None:
-            self._p = self._mixture.weights(log=False)
+            self._p = np.sum(self._mixture.weights(log=False), axis=1)
         return self._p
 
     @property

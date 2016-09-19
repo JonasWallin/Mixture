@@ -7,7 +7,7 @@ Created on May 1, 2016
 '''
 
 from Mixture.density import mNIG
-from Mixture import mixOneDims
+from Mixture import mixOneDims, SwarmOptimMixtured, swarm
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy.random as npr
@@ -31,10 +31,10 @@ if __name__ == "__main__":
     # Random initialization
     x0 = npr.randn(1+4*2*2)
     mixObj.set_param_vec(x0)
+    so_mixObj = SwarmOptimMixtured(mixObj)
 
     # Optimization
-    for iter_ in range(50):
-        mixObj.EMstep()
+    swarm(so_mixObj)
 
     # Get parameters
     pi_k, _, _ = mixObj.get_paramMat()

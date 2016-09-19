@@ -19,7 +19,7 @@ class SwarmOptimMixObj(object):
             storing the parameters needed to restore dict
             should include ['F'] current object value
         '''
-        store_dict = {par: getattr(self._mixture, attr) for attr in self._store_attr}
+        store_dict = {attr: getattr(self._mixture, attr) for attr in self._store_attr}
         store_dict['F'] = self.F
         return store_dict
 
@@ -29,8 +29,8 @@ class SwarmOptimMixObj(object):
         '''
         for par in param:
             if not par == 'F':
-                setattr(self._mixture, param[par])
-        self.F = F
+                setattr(self._mixture, par, param[par])
+        self.F = param['F']
 
     def computeProb(self):
         '''

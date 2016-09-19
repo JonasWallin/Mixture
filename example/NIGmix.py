@@ -41,8 +41,8 @@ if __name__ == "__main__":
         return lik
     
     x0 = npr.randn(1+4*2*2)
-    x = sp.optimize.fmin_cg(f, x0 ,epsilon = 1e-4)
-    #x = sp.optimize.fmin_powell(f, x0)
+    #x = sp.optimize.fmin_cg(f, x0 ,epsilon = 1e-4)
+    x = sp.optimize.fmin_powell(f, x0)
     #print(optim)
     mixObj.set_param_vec(x)
     dens1 = mixObj.density_1d(dim = 0, y = x_1)

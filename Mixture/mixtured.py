@@ -320,7 +320,8 @@ class mixtured(object):
         else:
             return logf
 
-    def weights(self,  paramvec = None, paramMat = None, alpha=  None, p = None, log=True, precompute = False):
+    def weights(self,  paramvec = None, paramMat = None, alpha=  None, p = None,
+                log=True, precompute = False, normalized=True):
         
         p, alpha, paramMat = self._check_parameters(paramvec, paramMat , alpha , p )
 
@@ -331,7 +332,8 @@ class mixtured(object):
                                             paramMat = paramMat[i], 
                                             precompute = precompute),
                                axis=1) + alpha[i]
-        pik -= logsumexp(pik, axis=0)[np.newaxis, :]
+        if normalized:
+            pik -= logsumexp(pik, axis=0)[np.newaxis, :]
 
         if log:
             return pik

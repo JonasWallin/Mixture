@@ -90,7 +90,7 @@ def drawOutlierPoint(Mixobj, prec = 0.1):
 		*prec* - [0,1] lower quantile what is defined as outlier 
 	"""
 	l = Mixobj.computeProb( )
-	l  = np.max(l, 1)
+	#l  = np.max(l, 1)
 	index  = l < np.percentile(l, prec)
 	
 	points_ = Mixobj.Y[index,:]
