@@ -45,11 +45,11 @@ class mixtured(object):
         """
         
         
-        
-        return np.sum(self.density(paramvec = paramvec,
-                                   paramMat = paramMat,
-                                   alpha    = alpha,
-                                   p        = p))
+        return np.sum(logsumexp(self.weights(normalized = False,
+                                             paramvec = paramvec,
+                                             paramMat = paramMat,
+                                             alpha = alpha,
+                                             p = p), axis=0))
         
     def set_data(self, y):
         """
