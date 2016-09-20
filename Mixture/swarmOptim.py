@@ -91,7 +91,7 @@ def drawOutlierPoint(Mixobj, prec = 0.1):
     """
     l = Mixobj.computeProb( )
     #l  = np.max(l, 1)
-    index  = l < np.percentile(l, prec)
+    index  = l < np.percentile(l, 100*prec)
     
     points_ = Mixobj.Y[index,:]
     index_p = np.random.randint(points_.shape[0])

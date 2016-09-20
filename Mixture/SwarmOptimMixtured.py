@@ -1,6 +1,9 @@
 import numpy as np
+from scipy.misc import logsumexp
 
 from . import SwarmOptimMixObj
+
+# TODO: Reset precomputed at better times.
 
 
 class SwarmOptimMixtured(SwarmOptimMixObj):
@@ -23,6 +26,21 @@ class SwarmOptimMixtured(SwarmOptimMixObj):
         '''
 
         self._mixture.EMstep()
+        self.reset_precomputed()
+
+    def storeParam(self):
+        param = super(SwarmOptimMixtured, self).storeParam()
+        p, alpha, paramMat = self._mixture.get_paramMat()
+        param['alpha'] = alpha
+        param['paramMat'] = paramMat
+        param['paramvec'] = self._mixture.get_paramvec()
+        return param
+
+    def restoreParam(self, param):
+        paramMat = param.pop('paramMat')
+        alpha = param['alpha']
+        self._mixture.set_paramMat(paramMat, alpha=alpha)
+        super(SwarmOptimMixtured, self).restoreParam(param)
 
     def computeProb(self):
         '''
@@ -34,7 +52,7 @@ class SwarmOptimMixtured(SwarmOptimMixObj):
         if not self._paramvec_curr is self._mixture.paramvec:
             self.reset_precomputed()
         if self._computedProb is None:
-            self._computedProb = np.sum(self._mixture.weights(normalized=False), axis=0)
+            self._computedProb = logsumexp(self._mixture.weights(normalized=False), axis=0)
         return self._computedProb
 
     def setMutated(self, ks, points):
@@ -52,6 +70,7 @@ class SwarmOptimMixtured(SwarmOptimMixObj):
             p[k] = p_median
         p /= np.sum(p)
         self._mixture.set_paramMat(paramMats, p=p)
+        self.reset_precomputed()
 
     def dist(self, k_1):
         '''
@@ -102,7 +121,7 @@ class SwarmOptimMixtured(SwarmOptimMixObj):
         if not self._paramvec_curr is self._mixture.paramvec:
             self.reset_precomputed()
         if self._F is None:
-            self._F = np.sum(self.computeProb)
+            self._F = np.sum(self.computeProb())
         return self._F
 
     @F.setter
