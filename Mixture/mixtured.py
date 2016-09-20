@@ -35,8 +35,6 @@ class mixtured(object):
         self.d = d
         self.dens = None
         self.alpha = None
-        self.store_attr = ['_paramvec', '_p', '_hardClass', '_loglik',
-                           '_computeProb']
         self.EMM_iter = 3
 
     def __call__(self, paramvec = None, paramMat = None, alpha=  None, p = None):
@@ -244,7 +242,7 @@ class mixtured(object):
         paramvec[:] = self.alpha[:] 
         
         for den in self.dens:
-            paramvec = np.hstack((paramvec, den.get_param_vec()))
+            paramvec = np.hstack((paramvec, den.get_paramvec()))
         
         return(paramvec)
          
@@ -329,11 +327,14 @@ class mixtured(object):
         alpha = np.hstack((0, alpha))
         for i, den in enumerate(self.dens):
             pik[i, :] = np.sum(den.dens_dim(y=self.y,
-                                            paramMat = paramMat[i], 
+                                            paramMat = paramMat[i],
                                             precompute = precompute),
-                               axis=1) + alpha[i]
+                                axis=1) + alpha[i]
+
         if normalized:
             pik -= logsumexp(pik, axis=0)[np.newaxis, :]
+        else:
+            pik += np.log(p[0])
 
         if log:
             return pik
