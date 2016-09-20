@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import numpy.random as npr
 
-n = 100000
+n = 10000
 
 
 if __name__ == "__main__":
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     so_mixObj = SwarmOptimMixtured(mixObj)
 
     # Optimization
-    swarm(so_mixObj)
+    swarm(so_mixObj, mutate_iteration = 3, burst_iteration = 3)
 
     # Get parameters
     pi_k, _, _ = mixObj.get_paramMat()
