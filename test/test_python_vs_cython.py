@@ -7,11 +7,13 @@ import unittest
 
 
 from Mixture.density import NIG
+from Mixture.density.purepython import NIG as NIG_py
 from Mixture.density import mNIG as muNIG
-from Mixture.density.purepython import mNIG as muNIG_python
+#from Mixture.density.purepython import mNIG as muNIG
 import scipy as sp
 import numpy.random as npr
 import scipy.special as sps
+from Mixture.util import Bessel1approx, Bessel0approx
 import numpy as np
 
 
@@ -28,7 +30,6 @@ class Test_mNIG(unittest.TestCase):
         self.paramMat = paramMatTrue
         d = self.paramMat.shape[0]
         self.simObj = muNIG(d = d)
-        self.simObj_py = muNIG_python(d = d)
         self.simObj.set_param_Mat(self.paramMat)
         self.Y = self.simObj.simulate(n = n)
 
@@ -37,24 +38,17 @@ class Test_mNIG(unittest.TestCase):
         pass
 
 
-    def testEM(self):
+    def testCompare_1(self):
         
-        
-        paramMat = np.zeros_like(self.paramMat)
-        for i in range(300): 
-            paramMat = self.simObj.EMstep(y = self.Y, paramMat = paramMat)
-        print(paramMat)
-        np.testing.assert_array_almost_equal(paramMat, self.paramMat, decimal = 1)  
-    def testEM_py(self):
-        
-        
-        paramMat = np.zeros_like(self.paramMat)
-        for i in range(300): 
-            paramMat = self.simObj_py.EMstep(y = self.Y, paramMat = paramMat)
-        print(paramMat)
-        np.testing.assert_array_almost_equal(paramMat, self.paramMat, decimal = 1)  
+        dens = NIG()
+        dens_py = NIG_py()
+        np.testing.assert_array_almost_equal( dens.dens(self.Y[:,1],  paramvec = paramMatTrue[1,:]),
+                                              dens_py.dens(self.Y[:,1], paramvec = paramMatTrue[1,:]), 
+                                              6)
 
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
+    
+    

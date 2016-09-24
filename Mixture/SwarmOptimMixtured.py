@@ -24,7 +24,6 @@ class SwarmOptimMixtured(SwarmOptimMixObj):
         '''
             Optimization step
         '''
-
         self._mixture.EMstep()
         self.reset_precomputed()
 
@@ -66,7 +65,7 @@ class SwarmOptimMixtured(SwarmOptimMixObj):
         p_median = np.median(p)
         points = points.reshape(-1, self._mixture.d)
         for i, k in enumerate(ks):
-            paramMats[k] = np.vstack([points[i, :], mu_mean, sigma_mean, nu_mean]).T
+            paramMats[k] = np.vstack([points[i, :], np.zeros_like(mu_mean), sigma_mean, 2 * np.ones_like(nu_mean)]).T
             p[k] = p_median
         p /= np.sum(p)
         self._mixture.set_paramMat(paramMats, p=p)

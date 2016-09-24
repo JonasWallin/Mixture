@@ -65,8 +65,10 @@ def mutate(Mixobj,
     if rand_class:
         k  = np.random.randint(Mixobj.K)
     else:
-        k  = np.argmin(Mixobj.p[:Mixobj.K])
-
+        p_  = 1./Mixobj.p[:Mixobj.K]
+        k = np.random.choice(range(Mixobj.K),size=1, p = p_/np.sum(p_))[0]
+        #k  = np.argmin(Mixobj.p[:Mixobj.K])
+    
 
     Mixobj.setMutated( [k], point_)
     
@@ -74,6 +76,8 @@ def mutate(Mixobj,
         Mixobj.step()
         
     F = Mixobj.F
+    print("{}_{}: pre: {} post: {}".format(k,rand_class,param0['F'], F))
+    #print(Mixobj._mixture.alpha_to_p(param0['alpha']) - Mixobj._mixture.alpha_to_p(Mixobj._mixture.alpha))
     if param0['F'] < F:
         if silent is False:
             if rand_class:

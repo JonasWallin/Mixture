@@ -6,7 +6,7 @@ Created on May 15, 2016
 
 from .purepython.NIG import NIG as NIGpy
 from .purepython.NIG import multi_univ_NIG as multi_univ_NIGpy
-from Mixture.util import Bessel1approx, Bessel0approx
+from Mixture.util import Bessel1approx, Bessel0approx, Bessel0eapprox, Bessel1eapprox
 import numpy as np
 #import line_profiler
 
@@ -68,11 +68,14 @@ class NIG(NIGpy):
         const = c0 #* n
         logf = y_ * ( mu / sigma)
         logf += const
-        logf += 0.5 * (np.log(a) - np.log(b))
-        K1 = Bessel1approx( np.array(np.sqrt(a * b)).flatten())
+        logf +=  (0.25 * np.log(a) - 0.75 * np.log(b))
+        #logf -= np.log(b)
+        sqrt_ab = np.array(np.sqrt(a * b)).flatten()
+        
+        K1e = Bessel1eapprox( sqrt_ab) 
         if precompute:
-            self.K1 = K1
-        logf += np.log( K1)
+            self.K1 = K1e
+        logf += np.log( K1e) - sqrt_ab
         
         if not log_:
             return np.exp(logf)
@@ -100,13 +103,13 @@ class NIG(NIGpy):
         b = nu + y_**2 
         
         sqrt_ab = np.sqrt(a * b)
+        
         if precompute:
             K1 = self.K1
         else:
-            K1 = Bessel1approx(sqrt_ab) # really -1 but K_-1(x) = K_1(x) 
+            K1 = Bessel1eapprox(sqrt_ab) # really -1 but K_-1(x) = K_1(x) 
             
-        K0 = Bessel0approx(sqrt_ab)
-        
+        K0 = Bessel0eapprox(sqrt_ab) 
         sqrt_a_div_b = np.sqrt(a/b)
         EV = np.zeros((np.int(np.max([1,np.prod(np.shape(y))])), 1))
         EV[:,0]         = K0 / K1
