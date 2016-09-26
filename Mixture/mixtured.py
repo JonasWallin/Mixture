@@ -319,23 +319,28 @@ class mixtured(object):
         else:
             return logf
 
-    def weights(self,  paramvec = None, paramMat = None, alpha=  None, p = None,
+    def weights(self, y = None, paramvec = None, paramMat = None, alpha=  None, p = None,
                 log=True, precompute = False, normalized=True):
         
+        
+        if y is None:
+            y = self.y
+            
         p, alpha, paramMat = self._check_parameters(paramvec, paramMat , alpha , p )
 
-        pik = np.zeros((self.K, self.n))
+        n = y.shape[0]
+        pik = np.zeros((self.K, n))
         alpha = np.hstack((0, alpha))
         for i, den in enumerate(self.dens):
-            pik[i, :] = np.sum(den.dens_dim(y=self.y,
+            pik[i, :] = np.sum(den.dens_dim(y = y,
                                             paramMat = paramMat[i],
                                             precompute = precompute),
-                                axis=1) + alpha[i]
+                                axis=1) + np.log(p[i])
 
         if normalized:
             pik -= logsumexp(pik, axis=0)[np.newaxis, :]
-        else:
-            pik += np.log(p[0])
+        #else:
+        #    pik += np.log(p[0])
 
         if log:
             return pik

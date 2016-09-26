@@ -228,19 +228,19 @@ class NIG(object):
         
         sqrt_ab = np.sqrt(a * b)
         if precompute:
-            K1 = self.K1
+            K1e = self.K1e
         else:
-            K1 = sps.kn(1, sqrt_ab) # really -1 but K_-1(x) = K_1(x) 
+            K1e = sps.k1e(sqrt_ab) # really -1 but K_-1(x) = K_1(x) 
             
-        K0 = sps.kn(0, sqrt_ab)
+        K0e = sps.k0e( sqrt_ab)
         
         sqrt_a_div_b = np.sqrt(a/b)
         EV = np.zeros((np.int(np.max([1,np.prod(np.shape(y))])), 1))
-        EV[:,0]         = K0 / K1
-        EV[K1==0, 0]     = 1.
+        EV[:,0]         = K0e / K1e
+        EV[K1e==0, 0]     = 1.
         EiV = np.zeros_like(EV)
-        EiV[:,0]          = ( K0 + 2 * K1/sqrt_ab) /K1
-        EiV[K1==0, 0]     = 1 + 2/sqrt_ab[K1==0]
+        EiV[:,0]          = ( K0e + 2 * K1e/sqrt_ab) /K1e
+        EiV[K1e==0, 0]     = 1 + 2/sqrt_ab[K1e==0]
         EV[:, 0]          /= sqrt_a_div_b
         EiV[:, 0]         *= sqrt_a_div_b
         
@@ -280,10 +280,10 @@ class NIG(object):
         logf += const
         logf += 0.5 * (np.log(a) - np.log(b))
         
-        K1 = sps.kn(1, np.sqrt(a * b))
+        K1e = sps.k1e( np.sqrt(a * b))
         if precompute:
-            self.K1 = K1
-        logf += np.log(K1)
+            self.K1e = K1e
+        logf += np.log(K1e) - np.sqrt(a * b)
         
         if not log_:
             return np.exp(logf)

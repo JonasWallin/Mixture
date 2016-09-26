@@ -56,15 +56,37 @@ double const P200[] = {1.25331414,
 					   -0.14686537,
 					   0.12792201,
 					   -0.15816086};
-double const PINF[] = {1.,
-					   0.375,
-					   -0.1171875};
 
+
+double const PINF[] = {2.2196792496874548962e+00,
+					   4.4137176114230414036e+01,
+					   3.4122953486801312910e+02,
+					   1.3319486433183221990e+03,
+					   2.8590657697910288226e+03,
+					   3.4540675585544584407e+03,
+					   2.3123742209168871550e+03,
+					   8.1094256146537402173e+02,
+					   1.3182609918569941308e+02,
+					   7.5584584631176030810e+00,
+					   6.4257745859173138767e-02};
+
+double const  QINF[] = {1.7710478032601086579e+00,
+						3.4552228452758912848e+01,
+						2.5951223655579051357e+02,
+						9.6929165726802648634e+02,
+						1.9448440788918006154e+03,
+						2.1181000487171943810e+03,
+						1.2082692316002348638e+03,
+						3.3031020088765390854e+02,
+						3.6001069306861518855e+01,
+						1};
 double limitK1_001(const double );
 double limitK1_008(const double );
 double limitK1_05(const double);
 double limitK1_1(const double);
 double limitK_upper(const double , const double[] , const int);
+double limitKe_upper(const double , const double[] , const int);
+double limitKe_inf(const double );
 double polyEval(const double x, const double P[], const int n)
 {
 	double res = P[n - 1];
@@ -76,6 +98,49 @@ double polyEval(const double x, const double P[], const int n)
 	}
 	return res;
 }
+
+void bessel1e(const double* x, double *res, const int n)
+{
+	/*
+	 * Approximation of besselK(1, x) *sqrt(x) * exp(x) with absolute and relative error less then 0.5*1e-7
+	 *
+	 * x   - (n x 1) value
+	 * res - (n x 1) result vector
+	 */
+
+	for(int i = 0; i < n; i++)
+	{
+		// return error if neg!
+		// return inf if 0.
+		if(x[i] < 0)
+			res[i] = NAN;
+		else if(x[i] == 0)
+			res[i] = INFINITY;
+		else if(x[i] < 0.001)
+			res[i] = limitK1_001(x[i]) * sqrt(x[i]) * exp(x[i]);
+		else if(x[i] < 0.08)
+			res[i] = limitK1_008(x[i]) * sqrt(x[i]) * exp(x[i]);
+		else if(x[i] < 0.5)
+			res[i] = limitK1_05(x[i]) * sqrt(x[i]) * exp(x[i]);
+		else if(x[i] < 1)
+			res[i] = limitK1_1(x[i]) * sqrt(x[i]) * exp(x[i]);
+		else if(x[i] < 1.5)
+			res[i] = limitKe_upper(x[i], P105, 5);
+		else if(x[i] < 2)
+			res[i] = limitKe_upper(x[i], P2, 5) ;
+		else if(x[i] < 5)
+			res[i] = limitKe_upper(x[i], P5, 6) ;
+		else if(x[i] < 40)
+			res[i] = limitKe_upper(x[i], P40, 6);
+		else if(x[i] < 200)
+			res[i] = limitKe_upper(x[i], P200, 5) ;
+		else
+			res[i] = limitKe_inf(x[i]);
+
+	}
+
+}
+
 void bessel1(const double* x, double *res, const int n)
 {
 	/*
@@ -156,6 +221,16 @@ void bessel1order(const double* x, double *res, const int n)
 
 }
 
+double limitKe_inf(const double x)
+{
+	/*
+				Bessel approximation between for large arg
+				using bessel
+		*/
+	double y = 1./x;
+	return(polyEval(y, PINF, 11)/polyEval(y, QINF, 10));
+}
+
 double limitK_upper(const double x, const double P[], const int Porder)
 {
 	/*
@@ -164,12 +239,21 @@ double limitK_upper(const double x, const double P[], const int Porder)
 				|error| < 0.5*1e-8
 		*/
 	double res = 1.;
-	res *= exp(-x) * polyEval(1. / x, P, Porder);
+	res = limitKe_upper(x, P, Porder);
+	res /= exp(x);
 	res /= sqrt(x);
 	return(res);
 }
 
-
+double limitKe_upper(const double x, const double P[], const int Porder)
+{
+	/*
+				Bessel approximation between [1.5, 2)
+				using Hankel times poly
+				|error| < 0.5*1e-8
+		*/
+	return(polyEval(1. / x, P, Porder));
+}
 
 double limitK1_1(const double x)
 {
@@ -286,10 +370,10 @@ double limitK0_08(const double x)
 	res += log(x) * polyEval(x2, K0C8, 4);
 	return(res);
 }
-double limitK0_upper(const double x)
+double limitK0e_upper(const double x)
 {
 	/*
-		Bessel approximation between (0.8, inf)
+		Bessel approximation between (0.8, inf) for K_0*exp(x)*sqrt(x)
 		using Boost approx
 		|error| < 1e-9
 	*/
@@ -297,7 +381,6 @@ double limitK0_upper(const double x)
 	double y = 1 / x;
 	res =  polyEval(y, K0_Pupper, 10);
 	res /= polyEval(y, K0_Cupper, 11);
-	res /= exp(x)* sqrt(x);
 	return(res);
 }
 
@@ -320,10 +403,37 @@ void bessel0(const double* x, double *res, const int n)
 			res[i] = INFINITY;
 		else if(x[i] < 0.8)
 			res[i] = limitK0_08(x[i]);
-		else if (x[i] < 1000)
-			res[i] = limitK0_upper(x[i]);
-		else
-			res[i] = 0;
+		else{
+			res[i] = limitK0e_upper(x[i]);
+			res[i] /= exp(x[i]) * sqrt(x[i]);
+		}
+
+	}
+
+}
+void bessel0e(const double* x, double *res, const int n)
+{
+	/*
+	 * Approximation of besselK(0, x) * exp(x) * sqrt(x) with absolute and relative error less then 0.5*1e-7
+	 *
+	 * x   - (n x 1) value
+	 * res - (n x 1) result vector
+	 */
+
+	for(int i = 0; i < n; i++)
+	{
+		// return error if neg!
+		// return inf if 0.
+		if(x[i] < 0)
+			res[i] = NAN;
+		else if(x[i] == 0)
+			res[i] = INFINITY;
+		else if(x[i] < 0.8){
+			res[i] = limitK0_08(x[i]);
+			res[i] *= exp(x[i]) * sqrt(x[i]);
+		}else
+			res[i] = limitK0e_upper(x[i]);
+
 
 	}
 

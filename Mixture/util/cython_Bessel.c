@@ -1188,7 +1188,9 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *, cha
 
 /* Module declarations from 'Mixture.util.cython_Bessel' */
 __PYX_EXTERN_C DL_IMPORT(void) bessel1(double const *, double *, int const ); /*proto*/
+__PYX_EXTERN_C DL_IMPORT(void) bessel1e(double const *, double *, int const ); /*proto*/
 __PYX_EXTERN_C DL_IMPORT(void) bessel0(double const *, double *, int const ); /*proto*/
+__PYX_EXTERN_C DL_IMPORT(void) bessel0e(double const *, double *, int const ); /*proto*/
 __PYX_EXTERN_C DL_IMPORT(void) bessel1order(double const *, double *, int const ); /*proto*/
 static __Pyx_TypeInfo __Pyx_TypeInfo_nn___pyx_t_5numpy_double_t = { "double_t", NULL, sizeof(__pyx_t_5numpy_double_t), { 0 }, 0, 'R', 0, 0 };
 #define __Pyx_MODULE_NAME "Mixture.util.cython_Bessel"
@@ -1213,6 +1215,8 @@ static const char __pyx_k_empty_like[] = "empty_like";
 static const char __pyx_k_RuntimeError[] = "RuntimeError";
 static const char __pyx_k_Bessel0approx[] = "Bessel0approx";
 static const char __pyx_k_Bessel1approx[] = "Bessel1approx";
+static const char __pyx_k_Bessel0eapprox[] = "Bessel0eapprox";
+static const char __pyx_k_Bessel1eapprox[] = "Bessel1eapprox";
 static const char __pyx_k_Bessel1approxOrdered[] = "Bessel1approxOrdered";
 static const char __pyx_k_Mixture_util_cython_Bessel[] = "Mixture.util.cython_Bessel";
 static const char __pyx_k_ndarray_is_not_C_contiguous[] = "ndarray is not C contiguous";
@@ -1223,8 +1227,10 @@ static const char __pyx_k_Non_native_byte_order_not_suppor[] = "Non-native byte 
 static const char __pyx_k_ndarray_is_not_Fortran_contiguou[] = "ndarray is not Fortran contiguous";
 static const char __pyx_k_Format_string_allocated_too_shor_2[] = "Format string allocated too short.";
 static PyObject *__pyx_n_s_Bessel0approx;
+static PyObject *__pyx_n_s_Bessel0eapprox;
 static PyObject *__pyx_n_s_Bessel1approx;
 static PyObject *__pyx_n_s_Bessel1approxOrdered;
+static PyObject *__pyx_n_s_Bessel1eapprox;
 static PyObject *__pyx_kp_u_Format_string_allocated_too_shor;
 static PyObject *__pyx_kp_u_Format_string_allocated_too_shor_2;
 static PyObject *__pyx_n_s_Mixture_util_cython_Bessel;
@@ -1247,8 +1253,10 @@ static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_kp_u_unknown_dtype_code_in_numpy_pxd;
 static PyObject *__pyx_n_s_x;
 static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_Bessel1approx(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x); /* proto */
-static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x); /* proto */
-static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_4Bessel0approx(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x); /* proto */
+static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1eapprox(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x); /* proto */
+static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_4Bessel1approxOrdered(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x); /* proto */
+static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_6Bessel0approx(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x); /* proto */
+static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_8Bessel0eapprox(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
 static PyObject *__pyx_tuple_;
@@ -1260,11 +1268,15 @@ static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__9;
 static PyObject *__pyx_tuple__11;
+static PyObject *__pyx_tuple__13;
+static PyObject *__pyx_tuple__15;
 static PyObject *__pyx_codeobj__8;
 static PyObject *__pyx_codeobj__10;
 static PyObject *__pyx_codeobj__12;
+static PyObject *__pyx_codeobj__14;
+static PyObject *__pyx_codeobj__16;
 
-/* "Mixture/util/cython_Bessel.pyx":17
+/* "Mixture/util/cython_Bessel.pyx":19
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel1approx(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
@@ -1280,7 +1292,7 @@ static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_1Bessel1approx(PyObject
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("Bessel1approx (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x), __pyx_ptype_5numpy_ndarray, 1, "x", 0))) __PYX_ERR(0, 17, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x), __pyx_ptype_5numpy_ndarray, 1, "x", 0))) __PYX_ERR(0, 19, __pyx_L1_error)
   __pyx_r = __pyx_pf_7Mixture_4util_13cython_Bessel_Bessel1approx(__pyx_self, ((PyArrayObject *)__pyx_v_x));
 
   /* function exit code */
@@ -1316,20 +1328,20 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_Bessel1approx(CYTHON_UN
   __pyx_pybuffernd_x.rcbuffer = &__pyx_pybuffer_x;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x.rcbuffer->pybuffer, (PyObject*)__pyx_v_x, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 17, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x.rcbuffer->pybuffer, (PyObject*)__pyx_v_x, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 19, __pyx_L1_error)
   }
   __pyx_pybuffernd_x.diminfo[0].strides = __pyx_pybuffernd_x.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_x.diminfo[0].shape = __pyx_pybuffernd_x.rcbuffer->pybuffer.shape[0];
 
-  /* "Mixture/util/cython_Bessel.pyx":24
+  /* "Mixture/util/cython_Bessel.pyx":26
  *     """
  * 
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)             # <<<<<<<<<<<<<<
  *     bessel1(<double *>  x.data, <double *>  res.data, x.shape[0])
  *     return res
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 24, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty_like); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 24, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty_like); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 26, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -1343,27 +1355,27 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_Bessel1approx(CYTHON_UN
     }
   }
   if (!__pyx_t_2) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, ((PyObject *)__pyx_v_x)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, ((PyObject *)__pyx_v_x)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 24, __pyx_L1_error)
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 26, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2); __pyx_t_2 = NULL;
     __Pyx_INCREF(((PyObject *)__pyx_v_x));
     __Pyx_GIVEREF(((PyObject *)__pyx_v_x));
     PyTuple_SET_ITEM(__pyx_t_4, 0+1, ((PyObject *)__pyx_v_x));
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 24, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 26, __pyx_L1_error)
   __pyx_t_5 = ((PyArrayObject *)__pyx_t_1);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_res.rcbuffer->pybuffer, (PyObject*)__pyx_t_5, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_res = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_res.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 24, __pyx_L1_error)
+      __PYX_ERR(0, 26, __pyx_L1_error)
     } else {__pyx_pybuffernd_res.diminfo[0].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_res.diminfo[0].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -1371,7 +1383,7 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_Bessel1approx(CYTHON_UN
   __pyx_v_res = ((PyArrayObject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Mixture/util/cython_Bessel.pyx":25
+  /* "Mixture/util/cython_Bessel.pyx":27
  * 
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)
  *     bessel1(<double *>  x.data, <double *>  res.data, x.shape[0])             # <<<<<<<<<<<<<<
@@ -1380,19 +1392,19 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_Bessel1approx(CYTHON_UN
  */
   bessel1(((double *)__pyx_v_x->data), ((double *)__pyx_v_res->data), (__pyx_v_x->dimensions[0]));
 
-  /* "Mixture/util/cython_Bessel.pyx":26
+  /* "Mixture/util/cython_Bessel.pyx":28
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)
  *     bessel1(<double *>  x.data, <double *>  res.data, x.shape[0])
  *     return res             # <<<<<<<<<<<<<<
  * 
- * 
+ * @cython.boundscheck(False)
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(((PyObject *)__pyx_v_res));
   __pyx_r = ((PyObject *)__pyx_v_res);
   goto __pyx_L0;
 
-  /* "Mixture/util/cython_Bessel.pyx":17
+  /* "Mixture/util/cython_Bessel.pyx":19
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel1approx(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
@@ -1429,21 +1441,21 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_Bessel1approx(CYTHON_UN
 /* "Mixture/util/cython_Bessel.pyx":32
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
- * def Bessel1approxOrdered(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
+ * def Bessel1eapprox(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
  *     """
- *         Approximation of modifed bessel function of the second kind with
+ *         Approximation of modifed bessel function of the second kind with,
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_3Bessel1approxOrdered(PyObject *__pyx_self, PyObject *__pyx_v_x); /*proto*/
-static char __pyx_doc_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered[] = "\n        Approximation of modifed bessel function of the second kind with\n        nu = 1.\n        (returns zero above 1000)\n        assumes x is orderd\n    ";
-static PyMethodDef __pyx_mdef_7Mixture_4util_13cython_Bessel_3Bessel1approxOrdered = {"Bessel1approxOrdered", (PyCFunction)__pyx_pw_7Mixture_4util_13cython_Bessel_3Bessel1approxOrdered, METH_O, __pyx_doc_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered};
-static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_3Bessel1approxOrdered(PyObject *__pyx_self, PyObject *__pyx_v_x) {
+static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_3Bessel1eapprox(PyObject *__pyx_self, PyObject *__pyx_v_x); /*proto*/
+static char __pyx_doc_7Mixture_4util_13cython_Bessel_2Bessel1eapprox[] = "\n        Approximation of modifed bessel function of the second kind with,\n        nu = 1.\n        (returns zero above 1000)\n    ";
+static PyMethodDef __pyx_mdef_7Mixture_4util_13cython_Bessel_3Bessel1eapprox = {"Bessel1eapprox", (PyCFunction)__pyx_pw_7Mixture_4util_13cython_Bessel_3Bessel1eapprox, METH_O, __pyx_doc_7Mixture_4util_13cython_Bessel_2Bessel1eapprox};
+static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_3Bessel1eapprox(PyObject *__pyx_self, PyObject *__pyx_v_x) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("Bessel1approxOrdered (wrapper)", 0);
+  __Pyx_RefNannySetupContext("Bessel1eapprox (wrapper)", 0);
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x), __pyx_ptype_5numpy_ndarray, 1, "x", 0))) __PYX_ERR(0, 32, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered(__pyx_self, ((PyArrayObject *)__pyx_v_x));
+  __pyx_r = __pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1eapprox(__pyx_self, ((PyArrayObject *)__pyx_v_x));
 
   /* function exit code */
   goto __pyx_L0;
@@ -1454,7 +1466,169 @@ static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_3Bessel1approxOrdered(P
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x) {
+static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1eapprox(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x) {
+  PyArrayObject *__pyx_v_res = 0;
+  __Pyx_LocalBuf_ND __pyx_pybuffernd_res;
+  __Pyx_Buffer __pyx_pybuffer_res;
+  __Pyx_LocalBuf_ND __pyx_pybuffernd_x;
+  __Pyx_Buffer __pyx_pybuffer_x;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyArrayObject *__pyx_t_5 = NULL;
+  __Pyx_RefNannySetupContext("Bessel1eapprox", 0);
+  __pyx_pybuffer_res.pybuffer.buf = NULL;
+  __pyx_pybuffer_res.refcount = 0;
+  __pyx_pybuffernd_res.data = NULL;
+  __pyx_pybuffernd_res.rcbuffer = &__pyx_pybuffer_res;
+  __pyx_pybuffer_x.pybuffer.buf = NULL;
+  __pyx_pybuffer_x.refcount = 0;
+  __pyx_pybuffernd_x.data = NULL;
+  __pyx_pybuffernd_x.rcbuffer = &__pyx_pybuffer_x;
+  {
+    __Pyx_BufFmt_StackElem __pyx_stack[1];
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x.rcbuffer->pybuffer, (PyObject*)__pyx_v_x, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 32, __pyx_L1_error)
+  }
+  __pyx_pybuffernd_x.diminfo[0].strides = __pyx_pybuffernd_x.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_x.diminfo[0].shape = __pyx_pybuffernd_x.rcbuffer->pybuffer.shape[0];
+
+  /* "Mixture/util/cython_Bessel.pyx":39
+ *     """
+ * 
+ *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)             # <<<<<<<<<<<<<<
+ *     bessel1e(<double *>  x.data, <double *>  res.data, x.shape[0])
+ *     return res
+ */
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty_like); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 39, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_2)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
+    }
+  }
+  if (!__pyx_t_2) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, ((PyObject *)__pyx_v_x)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+  } else {
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 39, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2); __pyx_t_2 = NULL;
+    __Pyx_INCREF(((PyObject *)__pyx_v_x));
+    __Pyx_GIVEREF(((PyObject *)__pyx_v_x));
+    PyTuple_SET_ITEM(__pyx_t_4, 0+1, ((PyObject *)__pyx_v_x));
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 39, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 39, __pyx_L1_error)
+  __pyx_t_5 = ((PyArrayObject *)__pyx_t_1);
+  {
+    __Pyx_BufFmt_StackElem __pyx_stack[1];
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_res.rcbuffer->pybuffer, (PyObject*)__pyx_t_5, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) {
+      __pyx_v_res = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_res.rcbuffer->pybuffer.buf = NULL;
+      __PYX_ERR(0, 39, __pyx_L1_error)
+    } else {__pyx_pybuffernd_res.diminfo[0].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_res.diminfo[0].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[0];
+    }
+  }
+  __pyx_t_5 = 0;
+  __pyx_v_res = ((PyArrayObject *)__pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* "Mixture/util/cython_Bessel.pyx":40
+ * 
+ *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)
+ *     bessel1e(<double *>  x.data, <double *>  res.data, x.shape[0])             # <<<<<<<<<<<<<<
+ *     return res
+ * 
+ */
+  bessel1e(((double *)__pyx_v_x->data), ((double *)__pyx_v_res->data), (__pyx_v_x->dimensions[0]));
+
+  /* "Mixture/util/cython_Bessel.pyx":41
+ *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)
+ *     bessel1e(<double *>  x.data, <double *>  res.data, x.shape[0])
+ *     return res             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(((PyObject *)__pyx_v_res));
+  __pyx_r = ((PyObject *)__pyx_v_res);
+  goto __pyx_L0;
+
+  /* "Mixture/util/cython_Bessel.pyx":32
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * def Bessel1eapprox(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
+ *     """
+ *         Approximation of modifed bessel function of the second kind with,
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&__pyx_type, &__pyx_value, &__pyx_tb);
+    __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_res.rcbuffer->pybuffer);
+    __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_x.rcbuffer->pybuffer);
+  __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
+  __Pyx_AddTraceback("Mixture.util.cython_Bessel.Bessel1eapprox", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  goto __pyx_L2;
+  __pyx_L0:;
+  __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_res.rcbuffer->pybuffer);
+  __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_x.rcbuffer->pybuffer);
+  __pyx_L2:;
+  __Pyx_XDECREF((PyObject *)__pyx_v_res);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "Mixture/util/cython_Bessel.pyx":46
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * def Bessel1approxOrdered(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
+ *     """
+ *         Approximation of modifed bessel function of the second kind with
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_5Bessel1approxOrdered(PyObject *__pyx_self, PyObject *__pyx_v_x); /*proto*/
+static char __pyx_doc_7Mixture_4util_13cython_Bessel_4Bessel1approxOrdered[] = "\n        Approximation of modifed bessel function of the second kind with\n        nu = 1.\n        (returns zero above 1000)\n        assumes x is orderd\n    ";
+static PyMethodDef __pyx_mdef_7Mixture_4util_13cython_Bessel_5Bessel1approxOrdered = {"Bessel1approxOrdered", (PyCFunction)__pyx_pw_7Mixture_4util_13cython_Bessel_5Bessel1approxOrdered, METH_O, __pyx_doc_7Mixture_4util_13cython_Bessel_4Bessel1approxOrdered};
+static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_5Bessel1approxOrdered(PyObject *__pyx_self, PyObject *__pyx_v_x) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("Bessel1approxOrdered (wrapper)", 0);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x), __pyx_ptype_5numpy_ndarray, 1, "x", 0))) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_r = __pyx_pf_7Mixture_4util_13cython_Bessel_4Bessel1approxOrdered(__pyx_self, ((PyArrayObject *)__pyx_v_x));
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_4Bessel1approxOrdered(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x) {
   PyArrayObject *__pyx_v_res = 0;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_res;
   __Pyx_Buffer __pyx_pybuffer_res;
@@ -1478,20 +1652,20 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered(C
   __pyx_pybuffernd_x.rcbuffer = &__pyx_pybuffer_x;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x.rcbuffer->pybuffer, (PyObject*)__pyx_v_x, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 32, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x.rcbuffer->pybuffer, (PyObject*)__pyx_v_x, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 46, __pyx_L1_error)
   }
   __pyx_pybuffernd_x.diminfo[0].strides = __pyx_pybuffernd_x.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_x.diminfo[0].shape = __pyx_pybuffernd_x.rcbuffer->pybuffer.shape[0];
 
-  /* "Mixture/util/cython_Bessel.pyx":40
+  /* "Mixture/util/cython_Bessel.pyx":54
  *     """
  * 
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)             # <<<<<<<<<<<<<<
  *     bessel1order(<double *>  x.data, <double *>  res.data, x.shape[0])
  *     return res
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 40, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 54, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty_like); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 40, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty_like); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 54, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -1505,27 +1679,27 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered(C
     }
   }
   if (!__pyx_t_2) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, ((PyObject *)__pyx_v_x)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 40, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, ((PyObject *)__pyx_v_x)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 54, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 40, __pyx_L1_error)
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 54, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2); __pyx_t_2 = NULL;
     __Pyx_INCREF(((PyObject *)__pyx_v_x));
     __Pyx_GIVEREF(((PyObject *)__pyx_v_x));
     PyTuple_SET_ITEM(__pyx_t_4, 0+1, ((PyObject *)__pyx_v_x));
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 40, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 54, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 40, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 54, __pyx_L1_error)
   __pyx_t_5 = ((PyArrayObject *)__pyx_t_1);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_res.rcbuffer->pybuffer, (PyObject*)__pyx_t_5, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_res = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_res.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 40, __pyx_L1_error)
+      __PYX_ERR(0, 54, __pyx_L1_error)
     } else {__pyx_pybuffernd_res.diminfo[0].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_res.diminfo[0].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -1533,7 +1707,7 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered(C
   __pyx_v_res = ((PyArrayObject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Mixture/util/cython_Bessel.pyx":41
+  /* "Mixture/util/cython_Bessel.pyx":55
  * 
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)
  *     bessel1order(<double *>  x.data, <double *>  res.data, x.shape[0])             # <<<<<<<<<<<<<<
@@ -1542,7 +1716,7 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered(C
  */
   bessel1order(((double *)__pyx_v_x->data), ((double *)__pyx_v_res->data), (__pyx_v_x->dimensions[0]));
 
-  /* "Mixture/util/cython_Bessel.pyx":42
+  /* "Mixture/util/cython_Bessel.pyx":56
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)
  *     bessel1order(<double *>  x.data, <double *>  res.data, x.shape[0])
  *     return res             # <<<<<<<<<<<<<<
@@ -1554,7 +1728,7 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered(C
   __pyx_r = ((PyObject *)__pyx_v_res);
   goto __pyx_L0;
 
-  /* "Mixture/util/cython_Bessel.pyx":32
+  /* "Mixture/util/cython_Bessel.pyx":46
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel1approxOrdered(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
@@ -1588,7 +1762,7 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered(C
   return __pyx_r;
 }
 
-/* "Mixture/util/cython_Bessel.pyx":46
+/* "Mixture/util/cython_Bessel.pyx":60
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel0approx(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
@@ -1597,15 +1771,15 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_2Bessel1approxOrdered(C
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_5Bessel0approx(PyObject *__pyx_self, PyObject *__pyx_v_x); /*proto*/
-static char __pyx_doc_7Mixture_4util_13cython_Bessel_4Bessel0approx[] = "\n        Approximation of modifed bessel function of the second kind with,\n        nu = 0.\n        (returns zero above 1000)\n    ";
-static PyMethodDef __pyx_mdef_7Mixture_4util_13cython_Bessel_5Bessel0approx = {"Bessel0approx", (PyCFunction)__pyx_pw_7Mixture_4util_13cython_Bessel_5Bessel0approx, METH_O, __pyx_doc_7Mixture_4util_13cython_Bessel_4Bessel0approx};
-static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_5Bessel0approx(PyObject *__pyx_self, PyObject *__pyx_v_x) {
+static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_7Bessel0approx(PyObject *__pyx_self, PyObject *__pyx_v_x); /*proto*/
+static char __pyx_doc_7Mixture_4util_13cython_Bessel_6Bessel0approx[] = "\n        Approximation of modifed bessel function of the second kind with,\n        nu = 0.\n        (returns zero above 1000)\n    ";
+static PyMethodDef __pyx_mdef_7Mixture_4util_13cython_Bessel_7Bessel0approx = {"Bessel0approx", (PyCFunction)__pyx_pw_7Mixture_4util_13cython_Bessel_7Bessel0approx, METH_O, __pyx_doc_7Mixture_4util_13cython_Bessel_6Bessel0approx};
+static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_7Bessel0approx(PyObject *__pyx_self, PyObject *__pyx_v_x) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("Bessel0approx (wrapper)", 0);
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x), __pyx_ptype_5numpy_ndarray, 1, "x", 0))) __PYX_ERR(0, 46, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7Mixture_4util_13cython_Bessel_4Bessel0approx(__pyx_self, ((PyArrayObject *)__pyx_v_x));
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x), __pyx_ptype_5numpy_ndarray, 1, "x", 0))) __PYX_ERR(0, 60, __pyx_L1_error)
+  __pyx_r = __pyx_pf_7Mixture_4util_13cython_Bessel_6Bessel0approx(__pyx_self, ((PyArrayObject *)__pyx_v_x));
 
   /* function exit code */
   goto __pyx_L0;
@@ -1616,7 +1790,7 @@ static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_5Bessel0approx(PyObject
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_4Bessel0approx(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x) {
+static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_6Bessel0approx(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x) {
   PyArrayObject *__pyx_v_res = 0;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_res;
   __Pyx_Buffer __pyx_pybuffer_res;
@@ -1640,20 +1814,20 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_4Bessel0approx(CYTHON_U
   __pyx_pybuffernd_x.rcbuffer = &__pyx_pybuffer_x;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x.rcbuffer->pybuffer, (PyObject*)__pyx_v_x, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 46, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x.rcbuffer->pybuffer, (PyObject*)__pyx_v_x, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 60, __pyx_L1_error)
   }
   __pyx_pybuffernd_x.diminfo[0].strides = __pyx_pybuffernd_x.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_x.diminfo[0].shape = __pyx_pybuffernd_x.rcbuffer->pybuffer.shape[0];
 
-  /* "Mixture/util/cython_Bessel.pyx":53
+  /* "Mixture/util/cython_Bessel.pyx":67
  *     """
  * 
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)             # <<<<<<<<<<<<<<
  *     bessel0(<double *>  x.data, <double *>  res.data, x.shape[0])
  *     return res
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 67, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty_like); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty_like); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 67, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -1667,27 +1841,27 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_4Bessel0approx(CYTHON_U
     }
   }
   if (!__pyx_t_2) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, ((PyObject *)__pyx_v_x)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, ((PyObject *)__pyx_v_x)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
   } else {
-    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 67, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2); __pyx_t_2 = NULL;
     __Pyx_INCREF(((PyObject *)__pyx_v_x));
     __Pyx_GIVEREF(((PyObject *)__pyx_v_x));
     PyTuple_SET_ITEM(__pyx_t_4, 0+1, ((PyObject *)__pyx_v_x));
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 53, __pyx_L1_error)
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 67, __pyx_L1_error)
   __pyx_t_5 = ((PyArrayObject *)__pyx_t_1);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_res.rcbuffer->pybuffer, (PyObject*)__pyx_t_5, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) {
       __pyx_v_res = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_res.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 53, __pyx_L1_error)
+      __PYX_ERR(0, 67, __pyx_L1_error)
     } else {__pyx_pybuffernd_res.diminfo[0].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_res.diminfo[0].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[0];
     }
   }
@@ -1695,25 +1869,28 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_4Bessel0approx(CYTHON_U
   __pyx_v_res = ((PyArrayObject *)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Mixture/util/cython_Bessel.pyx":54
+  /* "Mixture/util/cython_Bessel.pyx":68
  * 
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)
  *     bessel0(<double *>  x.data, <double *>  res.data, x.shape[0])             # <<<<<<<<<<<<<<
  *     return res
+ * 
  */
   bessel0(((double *)__pyx_v_x->data), ((double *)__pyx_v_res->data), (__pyx_v_x->dimensions[0]));
 
-  /* "Mixture/util/cython_Bessel.pyx":55
+  /* "Mixture/util/cython_Bessel.pyx":69
  *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)
  *     bessel0(<double *>  x.data, <double *>  res.data, x.shape[0])
  *     return res             # <<<<<<<<<<<<<<
+ * 
+ * @cython.boundscheck(False)
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(((PyObject *)__pyx_v_res));
   __pyx_r = ((PyObject *)__pyx_v_res);
   goto __pyx_L0;
 
-  /* "Mixture/util/cython_Bessel.pyx":46
+  /* "Mixture/util/cython_Bessel.pyx":60
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel0approx(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
@@ -1735,6 +1912,165 @@ static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_4Bessel0approx(CYTHON_U
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_x.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
   __Pyx_AddTraceback("Mixture.util.cython_Bessel.Bessel0approx", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  goto __pyx_L2;
+  __pyx_L0:;
+  __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_res.rcbuffer->pybuffer);
+  __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_x.rcbuffer->pybuffer);
+  __pyx_L2:;
+  __Pyx_XDECREF((PyObject *)__pyx_v_res);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "Mixture/util/cython_Bessel.pyx":73
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * def Bessel0eapprox(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
+ *     """
+ *         Approximation of modifed bessel function of the second kind with,
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_9Bessel0eapprox(PyObject *__pyx_self, PyObject *__pyx_v_x); /*proto*/
+static char __pyx_doc_7Mixture_4util_13cython_Bessel_8Bessel0eapprox[] = "\n        Approximation of modifed bessel function of the second kind with,\n        nu = 0. multiplied by exp(x)*sqrt(x)\n    ";
+static PyMethodDef __pyx_mdef_7Mixture_4util_13cython_Bessel_9Bessel0eapprox = {"Bessel0eapprox", (PyCFunction)__pyx_pw_7Mixture_4util_13cython_Bessel_9Bessel0eapprox, METH_O, __pyx_doc_7Mixture_4util_13cython_Bessel_8Bessel0eapprox};
+static PyObject *__pyx_pw_7Mixture_4util_13cython_Bessel_9Bessel0eapprox(PyObject *__pyx_self, PyObject *__pyx_v_x) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("Bessel0eapprox (wrapper)", 0);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x), __pyx_ptype_5numpy_ndarray, 1, "x", 0))) __PYX_ERR(0, 73, __pyx_L1_error)
+  __pyx_r = __pyx_pf_7Mixture_4util_13cython_Bessel_8Bessel0eapprox(__pyx_self, ((PyArrayObject *)__pyx_v_x));
+
+  /* function exit code */
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7Mixture_4util_13cython_Bessel_8Bessel0eapprox(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_x) {
+  PyArrayObject *__pyx_v_res = 0;
+  __Pyx_LocalBuf_ND __pyx_pybuffernd_res;
+  __Pyx_Buffer __pyx_pybuffer_res;
+  __Pyx_LocalBuf_ND __pyx_pybuffernd_x;
+  __Pyx_Buffer __pyx_pybuffer_x;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  PyArrayObject *__pyx_t_5 = NULL;
+  __Pyx_RefNannySetupContext("Bessel0eapprox", 0);
+  __pyx_pybuffer_res.pybuffer.buf = NULL;
+  __pyx_pybuffer_res.refcount = 0;
+  __pyx_pybuffernd_res.data = NULL;
+  __pyx_pybuffernd_res.rcbuffer = &__pyx_pybuffer_res;
+  __pyx_pybuffer_x.pybuffer.buf = NULL;
+  __pyx_pybuffer_x.refcount = 0;
+  __pyx_pybuffernd_x.data = NULL;
+  __pyx_pybuffernd_x.rcbuffer = &__pyx_pybuffer_x;
+  {
+    __Pyx_BufFmt_StackElem __pyx_stack[1];
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x.rcbuffer->pybuffer, (PyObject*)__pyx_v_x, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 73, __pyx_L1_error)
+  }
+  __pyx_pybuffernd_x.diminfo[0].strides = __pyx_pybuffernd_x.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_x.diminfo[0].shape = __pyx_pybuffernd_x.rcbuffer->pybuffer.shape[0];
+
+  /* "Mixture/util/cython_Bessel.pyx":79
+ *     """
+ * 
+ *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)             # <<<<<<<<<<<<<<
+ *     bessel0e(<double *>  x.data, <double *>  res.data, x.shape[0])
+ *     return res
+ */
+  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty_like); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = NULL;
+  if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_2)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_2);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
+    }
+  }
+  if (!__pyx_t_2) {
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, ((PyObject *)__pyx_v_x)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+  } else {
+    __pyx_t_4 = PyTuple_New(1+1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 79, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_GIVEREF(__pyx_t_2); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_2); __pyx_t_2 = NULL;
+    __Pyx_INCREF(((PyObject *)__pyx_v_x));
+    __Pyx_GIVEREF(((PyObject *)__pyx_v_x));
+    PyTuple_SET_ITEM(__pyx_t_4, 0+1, ((PyObject *)__pyx_v_x));
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 79, __pyx_L1_error)
+  __pyx_t_5 = ((PyArrayObject *)__pyx_t_1);
+  {
+    __Pyx_BufFmt_StackElem __pyx_stack[1];
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_res.rcbuffer->pybuffer, (PyObject*)__pyx_t_5, &__Pyx_TypeInfo_nn___pyx_t_5numpy_double_t, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) {
+      __pyx_v_res = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_res.rcbuffer->pybuffer.buf = NULL;
+      __PYX_ERR(0, 79, __pyx_L1_error)
+    } else {__pyx_pybuffernd_res.diminfo[0].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_res.diminfo[0].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[0];
+    }
+  }
+  __pyx_t_5 = 0;
+  __pyx_v_res = ((PyArrayObject *)__pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* "Mixture/util/cython_Bessel.pyx":80
+ * 
+ *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)
+ *     bessel0e(<double *>  x.data, <double *>  res.data, x.shape[0])             # <<<<<<<<<<<<<<
+ *     return res
+ */
+  bessel0e(((double *)__pyx_v_x->data), ((double *)__pyx_v_res->data), (__pyx_v_x->dimensions[0]));
+
+  /* "Mixture/util/cython_Bessel.pyx":81
+ *     cdef np.ndarray[np.double_t, ndim=1, mode='c'] res = np.empty_like(x)
+ *     bessel0e(<double *>  x.data, <double *>  res.data, x.shape[0])
+ *     return res             # <<<<<<<<<<<<<<
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(((PyObject *)__pyx_v_res));
+  __pyx_r = ((PyObject *)__pyx_v_res);
+  goto __pyx_L0;
+
+  /* "Mixture/util/cython_Bessel.pyx":73
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * def Bessel0eapprox(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
+ *     """
+ *         Approximation of modifed bessel function of the second kind with,
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
+    __Pyx_PyThreadState_declare
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&__pyx_type, &__pyx_value, &__pyx_tb);
+    __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_res.rcbuffer->pybuffer);
+    __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_x.rcbuffer->pybuffer);
+  __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
+  __Pyx_AddTraceback("Mixture.util.cython_Bessel.Bessel0eapprox", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
@@ -3893,8 +4229,10 @@ static struct PyModuleDef __pyx_moduledef = {
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_Bessel0approx, __pyx_k_Bessel0approx, sizeof(__pyx_k_Bessel0approx), 0, 0, 1, 1},
+  {&__pyx_n_s_Bessel0eapprox, __pyx_k_Bessel0eapprox, sizeof(__pyx_k_Bessel0eapprox), 0, 0, 1, 1},
   {&__pyx_n_s_Bessel1approx, __pyx_k_Bessel1approx, sizeof(__pyx_k_Bessel1approx), 0, 0, 1, 1},
   {&__pyx_n_s_Bessel1approxOrdered, __pyx_k_Bessel1approxOrdered, sizeof(__pyx_k_Bessel1approxOrdered), 0, 0, 1, 1},
+  {&__pyx_n_s_Bessel1eapprox, __pyx_k_Bessel1eapprox, sizeof(__pyx_k_Bessel1eapprox), 0, 0, 1, 1},
   {&__pyx_kp_u_Format_string_allocated_too_shor, __pyx_k_Format_string_allocated_too_shor, sizeof(__pyx_k_Format_string_allocated_too_shor), 0, 1, 0, 0},
   {&__pyx_kp_u_Format_string_allocated_too_shor_2, __pyx_k_Format_string_allocated_too_shor_2, sizeof(__pyx_k_Format_string_allocated_too_shor_2), 0, 1, 0, 0},
   {&__pyx_n_s_Mixture_util_cython_Bessel, __pyx_k_Mixture_util_cython_Bessel, sizeof(__pyx_k_Mixture_util_cython_Bessel), 0, 0, 1, 1},
@@ -3997,41 +4335,65 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "Mixture/util/cython_Bessel.pyx":17
+  /* "Mixture/util/cython_Bessel.pyx":19
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel1approx(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
  *     """
  *         Approximation of modifed bessel function of the second kind with,
  */
-  __pyx_tuple__7 = PyTuple_Pack(2, __pyx_n_s_x, __pyx_n_s_res); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_tuple__7 = PyTuple_Pack(2, __pyx_n_s_x, __pyx_n_s_res); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
-  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_jonaswallin_repos_Mixture, __pyx_n_s_Bessel1approx, 17, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_jonaswallin_repos_Mixture, __pyx_n_s_Bessel1approx, 19, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) __PYX_ERR(0, 19, __pyx_L1_error)
 
   /* "Mixture/util/cython_Bessel.pyx":32
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * def Bessel1eapprox(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
+ *     """
+ *         Approximation of modifed bessel function of the second kind with,
+ */
+  __pyx_tuple__9 = PyTuple_Pack(2, __pyx_n_s_x, __pyx_n_s_res); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__9);
+  __Pyx_GIVEREF(__pyx_tuple__9);
+  __pyx_codeobj__10 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__9, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_jonaswallin_repos_Mixture, __pyx_n_s_Bessel1eapprox, 32, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__10)) __PYX_ERR(0, 32, __pyx_L1_error)
+
+  /* "Mixture/util/cython_Bessel.pyx":46
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel1approxOrdered(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
  *     """
  *         Approximation of modifed bessel function of the second kind with
  */
-  __pyx_tuple__9 = PyTuple_Pack(2, __pyx_n_s_x, __pyx_n_s_res); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 32, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__9);
-  __Pyx_GIVEREF(__pyx_tuple__9);
-  __pyx_codeobj__10 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__9, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_jonaswallin_repos_Mixture, __pyx_n_s_Bessel1approxOrdered, 32, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__10)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __pyx_tuple__11 = PyTuple_Pack(2, __pyx_n_s_x, __pyx_n_s_res); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__11);
+  __Pyx_GIVEREF(__pyx_tuple__11);
+  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_jonaswallin_repos_Mixture, __pyx_n_s_Bessel1approxOrdered, 46, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(0, 46, __pyx_L1_error)
 
-  /* "Mixture/util/cython_Bessel.pyx":46
+  /* "Mixture/util/cython_Bessel.pyx":60
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel0approx(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
  *     """
  *         Approximation of modifed bessel function of the second kind with,
  */
-  __pyx_tuple__11 = PyTuple_Pack(2, __pyx_n_s_x, __pyx_n_s_res); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__11);
-  __Pyx_GIVEREF(__pyx_tuple__11);
-  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_jonaswallin_repos_Mixture, __pyx_n_s_Bessel0approx, 46, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_tuple__13 = PyTuple_Pack(2, __pyx_n_s_x, __pyx_n_s_res); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 60, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__13);
+  __Pyx_GIVEREF(__pyx_tuple__13);
+  __pyx_codeobj__14 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__13, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_jonaswallin_repos_Mixture, __pyx_n_s_Bessel0approx, 60, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__14)) __PYX_ERR(0, 60, __pyx_L1_error)
+
+  /* "Mixture/util/cython_Bessel.pyx":73
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * def Bessel0eapprox(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
+ *     """
+ *         Approximation of modifed bessel function of the second kind with,
+ */
+  __pyx_tuple__15 = PyTuple_Pack(2, __pyx_n_s_x, __pyx_n_s_res); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
+  __pyx_codeobj__16 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__15, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Users_jonaswallin_repos_Mixture, __pyx_n_s_Bessel0eapprox, 73, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__16)) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -4173,40 +4535,64 @@ PyMODINIT_FUNC PyInit_cython_Bessel(void)
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_pickle, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Mixture/util/cython_Bessel.pyx":17
+  /* "Mixture/util/cython_Bessel.pyx":19
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel1approx(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
  *     """
  *         Approximation of modifed bessel function of the second kind with,
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7Mixture_4util_13cython_Bessel_1Bessel1approx, NULL, __pyx_n_s_Mixture_util_cython_Bessel); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 17, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7Mixture_4util_13cython_Bessel_1Bessel1approx, NULL, __pyx_n_s_Mixture_util_cython_Bessel); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Bessel1approx, __pyx_t_1) < 0) __PYX_ERR(0, 17, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Bessel1approx, __pyx_t_1) < 0) __PYX_ERR(0, 19, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "Mixture/util/cython_Bessel.pyx":32
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * def Bessel1eapprox(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
+ *     """
+ *         Approximation of modifed bessel function of the second kind with,
+ */
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7Mixture_4util_13cython_Bessel_3Bessel1eapprox, NULL, __pyx_n_s_Mixture_util_cython_Bessel); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Bessel1eapprox, __pyx_t_1) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "Mixture/util/cython_Bessel.pyx":46
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel1approxOrdered(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
  *     """
  *         Approximation of modifed bessel function of the second kind with
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7Mixture_4util_13cython_Bessel_3Bessel1approxOrdered, NULL, __pyx_n_s_Mixture_util_cython_Bessel); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7Mixture_4util_13cython_Bessel_5Bessel1approxOrdered, NULL, __pyx_n_s_Mixture_util_cython_Bessel); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Bessel1approxOrdered, __pyx_t_1) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Bessel1approxOrdered, __pyx_t_1) < 0) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Mixture/util/cython_Bessel.pyx":46
+  /* "Mixture/util/cython_Bessel.pyx":60
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * def Bessel0approx(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
  *     """
  *         Approximation of modifed bessel function of the second kind with,
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7Mixture_4util_13cython_Bessel_5Bessel0approx, NULL, __pyx_n_s_Mixture_util_cython_Bessel); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7Mixture_4util_13cython_Bessel_7Bessel0approx, NULL, __pyx_n_s_Mixture_util_cython_Bessel); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 60, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Bessel0approx, __pyx_t_1) < 0) __PYX_ERR(0, 46, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Bessel0approx, __pyx_t_1) < 0) __PYX_ERR(0, 60, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "Mixture/util/cython_Bessel.pyx":73
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
+ * def Bessel0eapprox(np.ndarray[np.double_t, ndim=1, mode='c']  x):             # <<<<<<<<<<<<<<
+ *     """
+ *         Approximation of modifed bessel function of the second kind with,
+ */
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7Mixture_4util_13cython_Bessel_9Bessel0eapprox, NULL, __pyx_n_s_Mixture_util_cython_Bessel); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Bessel0eapprox, __pyx_t_1) < 0) __PYX_ERR(0, 73, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "Mixture/util/cython_Bessel.pyx":2
