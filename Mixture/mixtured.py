@@ -11,6 +11,7 @@ import numpy as np
 import copy as cp
 import numpy.random as npr
 from scipy.misc import logsumexp
+import cPickle as pickle
 
 
 #TODO: 1,setup general parameter setup 2,EMstep
@@ -424,4 +425,9 @@ class mixtured(object):
             return paramvec
         
         return p, self.p_to_alpha(p), paramMat_out 
-   
+
+    def save_param(self, filename):
+        p, alpha, paramMat = self.get_paramMat()
+        with open(filename, 'w') as f:
+            pickle.dump({'alpha': alpha, 'paramMat': paramMat}, f, -1)
+
