@@ -128,6 +128,165 @@ class NIG(NIGpy):
         return self.dens(paramvec = paramvec, y = y)
  
 
+
+class NIG_conj(NIGpy):
+    """
+        NIG with conjugate prior 
+        
+        assuming 
+        \delta -  N (\theta_01, theta_11^-1)
+        \mu    -  N (\theta_02, theta_12^-1)
+        \sigma -  IG(alpha, beta)
+        \nu    -  IG(alpha, beta)
+    """
+    def __init__(self, param = None, paramvec = None, prior = None):
+        """
+        
+            prior - (4 x 2) 
+                    prior[0, :] - mean delta, var delta
+                    prior[1, :] - mean mu   , var mu
+                    prior[2, :] -  beta/(alpha+1), alpha for Inverse Gamma distribution for \sigma^2
+                    prior[3, :] - alpha/beta, alpha for  Gamma distribution for \nu
+        """
+        super(NIG_conj, self).__init__(param = param, paramvec = paramvec)
+        
+        if prior is None:
+            self.prior = None
+        else:
+            self.prior = np.array(prior)
+      
+    def _prior(self, prior_ = None):
+        
+        if prior_ is None:
+            return self.prior
+        
+        return prior_  
+        
+    def Mstep(self, EV, EiV, p = None, y = None, paramvec = None, update = [1,1,1,1], prior = None):
+        """
+            Takes an Mstep in a EM algorithm
+            
+            log(l(\theta|Y) ) = \sum_i p_i (\log(\sigma ^{-1}) - (Y_i - delta + mu - mu V_i)^2/(2 \sigma^2 V_i) 
+                                 - \log(\nu)/2 - V_i^{-1}/2 \nu - V_i/2 \nu + \nu )
+                                 + C   
+            
+            EV       - (n x 1) the expectation of the latent variance parameter
+            EiV      - (n x 1) the expectation of the latent 1/variance parameter
+            p        - (n x 1) weight of the observations p_i \in [0,1]
+            y        - (n x 1) the observations
+            paramvec - (k x 1) the parameter to evalute the density
+            update   - (k x 1) which of the parameters should be updated, order
+                               delta, mu, nu ,sigma 
+        """
+    
+    
+        if y is None:
+            y = self.y
+    
+        if p is None:
+            p = np.ones((max([1, np.prod(np.shape(y))]), 1))
+                                 
+        delta, mu, nu, sigma = self._paramvec(paramvec)
+        
+        prior = self._prior(prior_ = prior)
+        # 
+        sum_p  = np.sum(p)
+        p_EV   = p.flatten() * EV.flatten()
+        p_EiV  = p.flatten() * EiV.flatten()
+        sum_pEiV  = np.sum(p_EiV)
+        sum_pEV   = np.sum(p_EV)
+        sum_pY    = np.sum(np.multiply(y.flatten(), p.flatten()))
+        sum_pYEiv = np.sum(np.multiply(y.flatten() , p_EiV.flatten()))
+        #delta, mu step
+        # the log likelhiood quadratic function
+        #- \frac{1}{2} [\delta, mu]^T Q  [\delta, mu] +  b^T [\delta, mu]
+        Q = np.array([[sum_pEiV,            (-sum_pEiV + sum_p)], 
+                      [ (-sum_pEiV + sum_p),  sum_pEiV  + sum_pEV - 2 * sum_p]])
+
+            
+        b = np.array([ [sum_pYEiv], [-sum_pYEiv + sum_pY]])
+        
+        if prior is not None:
+            
+            Q[0, 0] += prior[0,1]
+            Q[1, 1] += prior[1,1]
+            b[0]    += prior[0,0] *prior[0,1]
+            b[1]    += prior[1,0] *prior[1,1]    
+                
+        Qinvb = np.linalg.solve(Q, b) 
+        
+        if update[0] > 0:
+            delta = Qinvb.flatten()[0]
+        if update[1] > 0:
+            mu   = Qinvb.flatten()[1]
+        
+        if prior is not None:
+            
+            Q[0, 0] -= prior[0,1]
+            Q[1, 1] -= prior[1,1]
+            b[0]    -= prior[0,0] *prior[0,1]
+            b[1]    -= prior[1,0] *prior[1,1]           
+        # sigma step
+        # 
+        if update[3] > 0:
+            delta_mu = np.array([[delta],[mu]])
+            H = np.dot( -0.5*np.dot(delta_mu.transpose(), Q) + b.transpose(), delta_mu) - 0.5*np.sum(np.multiply(y.flatten()**2 , p_EiV.flatten()))  
+            H[0,0] *= -1.
+            n_ = sum_p*0.5
+            if prior is not None:
+                H[0,0] += (prior[2,1] + 1) * prior[2,0]
+                n_ += prior[2,1] + 1
+                
+            sigma = np.sqrt(H[0,0]/n_)
+        
+        # nu step
+        if update[2]  > 0:
+            c  = 0.5 * (np.sum(p_EV) + sum_pEiV - 2*sum_p  )
+            c0 = 0.5 * sum_p 
+            if prior is not None:
+                c  +=  prior[3,1]/prior[3,0]
+                c0 +=  (prior[3,1]-1)
+            nu = c0 / c
+               
+        return [delta, mu, np.log(nu), np.log(sigma)]
+    
+    
+    def EMstep(self, 
+               y = None, 
+               paramvec = None,  
+               update  = [1,1,1,1],
+               p   = None,
+               compute_E = True, 
+               EV = None, 
+               EiV = None,
+               update_param = True,
+               precompute   = False,
+               prior = None):
+        
+        """
+            Takes an Mstep in a EM algorithm
+            y            - (n x 1) the observations
+            p            - (n x 1) weight of the observations p_i \in [0,1] 
+            paramvec     - (k x 1) the parameter to evalute the density
+            update       - (k x 1) which of the parameters should be updated, order
+                               delta, mu, nu ,sigma 
+            compute_E    - (bool) Compute the expectations
+            EV           - (n x 1) the expectation of the latent variance parameter
+            EiV          - (n x 1) the expectation of the latent 1/variance parameter
+            update_param - (bool) update the parameters in the object
+            precompute - (bool)  is the bessel1 alredy caculated
+        """
+        
+        if compute_E:
+            EV, EiV = self.EV(y, paramvec, precompute = precompute)
+        
+        
+        res = self.Mstep(EV, EiV, p = p, y = y, paramvec = paramvec, update = update, prior = prior)
+        if update_param:
+            self.set_param_vec(res)
+        
+        return res
+
 class multi_univ_NIG(multi_univ_NIGpy):
     """
         multivariate vertsion

@@ -5,7 +5,7 @@ Created on May 1, 2016
 '''
 import unittest
 
-from Mixture.density import NIG
+from Mixture.density import NIG, NIGc
 from Mixture.density.purepython import NIG as pNIG
 import scipy as sp
 import numpy.random as npr
@@ -35,6 +35,167 @@ def EV(NIG_obj, y, power = 1):
     return res 
 
 
+class Test_NIG_conj(unittest.TestCase):
+    
+ 
+
+    def setUp(self):
+        npr.seed(12346)
+        n  = 10000
+        self.simObj = NIGc(paramvec = [1.1, 2.12,0.1,0.1])
+        self.Y = self.simObj.simulate(n = n)
+        
+    
+    def testEM(self):
+        """
+            without prior
+        """
+        paramvec_true = self.simObj.get_param_vec()
+        #test nu
+        if 1:
+            
+            paramvec      = np.array(paramvec_true)
+            paramvec[2]   = 0
+            # test nu
+            for i in range(100): 
+                paramvec = self.simObj.EMstep(y = self.Y, 
+                                              paramvec = paramvec,
+                                              update = [0,0,1,0])
+            
+            np.testing.assert_approx_equal(paramvec[2], paramvec_true[2], significant = 0.5)
+        
+        
+        # test delta, mu
+        if 1:
+            paramvec      = np.array(paramvec_true)
+            paramvec[0]   = 0
+            paramvec[1]   = 0
+            # test nu
+            for i in range(20): 
+                paramvec = self.simObj.EMstep(y = self.Y, 
+                                              paramvec = paramvec,
+                                              update = [1,1,0,0])
+            np.testing.assert_approx_equal(paramvec[0], paramvec_true[0], significant = 2)
+            np.testing.assert_approx_equal(paramvec[1], paramvec_true[1], significant = 2)
+
+        # test sigma
+        if 1:
+            
+            paramvec      = np.array(paramvec_true)
+            paramvec[3]   = 0
+           
+            for i in range(40): 
+                paramvec = self.simObj.EMstep(y = self.Y, 
+                                              paramvec = paramvec,
+                                              update = [0,0,0,1])
+            
+            np.testing.assert_approx_equal(paramvec[3], paramvec_true[3], significant = 0.5)  
+            
+        # test all   if 0:
+            
+        paramvec      = np.zeros_like(paramvec_true)
+       
+        for i in range(100): 
+            paramvec = self.simObj.EMstep(y = self.Y, 
+                                          paramvec = paramvec,
+                                          update = [1,1,1,1])
+        
+        np.testing.assert_array_almost_equal(paramvec, paramvec_true, decimal = 1)  
+              
+
+    def testEM_withP(self):
+        """
+            with prior
+        """
+        paramvec_true = self.simObj.get_param_vec()
+        #test nu
+        if 1:
+            
+            paramvec      = np.array(paramvec_true)
+            paramvec[2]   = 0
+            
+            prior = np.array([[0., 2.],
+                              [0., 2.],
+                              [10., 2.],
+                              [10., 2.],])
+            prior2 = np.array([[10, 10.**5],
+                              [10, 10.**5],
+                              [ 10., 10**5],
+                              [ 10., 10**5],])
+            # test nu
+            for i in range(100): 
+                paramvec = self.simObj.EMstep(y = self.Y, 
+                                              paramvec = paramvec,
+                                              update = [0,0,1,0],
+                                              prior  = prior)
+            
+            np.testing.assert_approx_equal(paramvec[2], paramvec_true[2], significant = 0.5)
+            
+            paramvec2 = np.array(paramvec)
+            for i in range(20): 
+                paramvec = self.simObj.EMstep(y = self.Y, 
+                                              paramvec = paramvec,
+                                              update = [0,0,1,0],
+                                              prior  = prior2)            
+            np.testing.assert_array_less(paramvec2[2], paramvec[2])
+            
+        # test delta, mu
+        if 1:
+            paramvec      = np.array(paramvec_true)
+            paramvec[0]   = 0
+            paramvec[1]   = 0
+            # test nu
+            for i in range(20): 
+                paramvec = self.simObj.EMstep(y = self.Y, 
+                                              paramvec = paramvec,
+                                              update = [1,1,0,0],
+                                              prior= prior)
+            np.testing.assert_approx_equal(paramvec[0], paramvec_true[0], significant = 2)
+            np.testing.assert_approx_equal(paramvec[1], paramvec_true[1], significant = 2)
+            
+            paramvec2 = np.array(paramvec)
+            for i in range(20): 
+                paramvec = self.simObj.EMstep(y = self.Y, 
+                                              paramvec = paramvec,
+                                              update = [1,1,0,0],
+                                              prior  = prior2)   
+            np.testing.assert_array_less(paramvec2[0], paramvec[0])    
+            np.testing.assert_array_less(paramvec2[1], paramvec[1])
+
+        # test sigma
+        if 1:
+            
+            paramvec      = np.array(paramvec_true)
+            paramvec[3]   = 0
+           
+            for i in range(40): 
+                paramvec = self.simObj.EMstep(y = self.Y, 
+                                              paramvec = paramvec,
+                                              update = [0,0,0,1],
+                                              prior = prior)
+            
+            np.testing.assert_approx_equal(paramvec[3], paramvec_true[3], significant = 0.5)  
+            paramvec2 = np.array(paramvec)
+            for i in range(20): 
+                paramvec = self.simObj.EMstep(y = self.Y, 
+                                              paramvec = paramvec,
+                                              update = [0,0,0,1],
+                                              prior  = prior2)   
+            np.testing.assert_array_less(paramvec2[3], paramvec[3]) 
+        # test all   if 0:
+            
+        paramvec      = np.zeros_like(paramvec_true)
+       
+        for i in range(100): 
+            paramvec = self.simObj.EMstep(y = self.Y, 
+                                          paramvec = paramvec,
+                                          update = [1,1,1,1],
+                                          prior = prior)
+
+      
+        np.testing.assert_array_almost_equal(paramvec, paramvec_true, decimal = 1)  
+         
+
 class Test_pNIG(unittest.TestCase):
     
  
@@ -61,21 +222,20 @@ class Test_pNIG(unittest.TestCase):
         """
         paramvec_true = self.simObj.get_param_vec()
         #test nu
-        if 0:
+        if 1:
             
             paramvec      = np.array(paramvec_true)
             paramvec[2]   = 0
             # test nu
-            for i in range(20): 
+            for i in range(80): 
                 paramvec = self.simObj.EMstep(y = self.Y, 
                                               paramvec = paramvec,
                                               update = [0,0,1,0])
-            
-            np.testing.assert_approx_equal(paramvec[2], paramvec_true[2], significant = 2)
+            np.testing.assert_approx_equal(paramvec[2], paramvec_true[2], significant = 0)
         
         
         # test delta, mu
-        if 0:
+        if 1:
             paramvec      = np.array(paramvec_true)
             paramvec[0]   = 0
             paramvec[1]   = 0
@@ -88,7 +248,7 @@ class Test_pNIG(unittest.TestCase):
             np.testing.assert_approx_equal(paramvec[1], paramvec_true[1], significant = 2)
 
         # test sigma
-        if 0:
+        if 1:
             
             paramvec      = np.array(paramvec_true)
             paramvec[3]   = 0
@@ -98,7 +258,7 @@ class Test_pNIG(unittest.TestCase):
                                               paramvec = paramvec,
                                               update = [0,0,0,1])
             
-            np.testing.assert_approx_equal(paramvec[3], paramvec_true[3], significant = 2)  
+            np.testing.assert_approx_equal(paramvec[3], paramvec_true[3], significant = 0)  
             
         # test all   if 0:
             
@@ -111,6 +271,8 @@ class Test_pNIG(unittest.TestCase):
         
         np.testing.assert_array_almost_equal(paramvec, paramvec_true, decimal = 1)  
                
+
+ 
 
 class Test_NIG(unittest.TestCase):
 
