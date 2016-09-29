@@ -381,7 +381,7 @@ class multi_univ_NIG(object):
         for d-dimensional object where each dimension is iid
     """
     
-    def __init__(self, d = None, param = None, paramvec = None):
+    def __init__(self, d, param = None, paramvec = None):
     
     
     

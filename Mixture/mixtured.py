@@ -24,6 +24,7 @@ class mixtured(object):
         - set_param_vec -  same as set_prior but now the data is in vector form 
         - set_data      - set the data
         - k             - number of parameters
+        - set_prior    - (optional)  if the each density has prior set them here
     
     """
     
@@ -379,6 +380,18 @@ class mixtured(object):
             return logfk
         else:
             return np.exp(logfk)
+    
+    
+    def set_prior(self, prior):
+        """
+            if the object has prior here we can set them
+            
+            prior - (K x 1) list of prior
+        """ 
+        
+        for i, den in enumerate(self.dens):
+            den.set_prior(prior[i])
+        
     
     def EMstep(self, 
                y          = None, 

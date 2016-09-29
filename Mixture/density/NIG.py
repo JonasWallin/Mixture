@@ -155,6 +155,14 @@ class NIG_conj(NIGpy):
         else:
             self.prior = np.array(prior)
       
+    def set_prior(self, prior = None):
+        
+        
+        if prior is None:
+            self.prior = None
+        else:
+            self.prior = np.array(prior)
+        
     def _prior(self, prior_ = None):
         
         if prior_ is None:
@@ -305,3 +313,100 @@ class multi_univ_NIG(multi_univ_NIGpy):
         
         self.NIGs = [ NIG() for i in range(d)]  # @UnusedVariable   
     
+    
+class multi_univ_NIG_conj(multi_univ_NIGpy):
+    """    
+        multivariate version of conjugate NIG
+    
+    """ 
+
+
+    def __init__(self, d , param = None, paramvec = None, prior = None):
+        
+        
+        super(multi_univ_NIG_conj, self).__init__(d = d, param = param, paramvec = paramvec)
+        
+        if prior is None:
+            [ self.NIGs[i].set_prior(None) for i in range(self.d)] 
+        else:
+            [ self.NIGs[i].set_prior(prior[i]) for i in range(self.d)] 
+          
+    
+    
+    def set_prior(self, prior):
+        """
+            prior - (d x 1) list of priors
+        
+        """
+        [ self.NIGs[i].set_prior(prior[i]) for i in range(self.d)]
+        
+
+    def set_objects(self, d = None):
+        """
+            sets up the basic objects
+        """
+        if d is None:
+            d = self.d
+            
+        if d is None:
+            raise Exception('dimesnion must be set before set_objects')
+        
+        self.NIGs = [ NIG_conj() for i in range(d)]  # @UnusedVariable   
+
+    def _prior(self, prior_ = None):
+        
+        if prior_ is None:
+            return [ self.NIGs[0].prior for i in range(self.d)]  # @UnusedVariable
+        
+        return prior_       
+
+    def EMstep(self, 
+               y = None, 
+               paramMat = None, 
+               paramvec = None,
+               update  = [1,1,1,1],
+               p   = None,
+               update_param = True,
+               precompute   = False,
+               prior        = None):
+        
+        """
+            Takes an Mstep in a EM algorithm
+            y            - (n x 1) the observations
+            p            - (n x d) weight of the observations p_i \in [0,1] 
+            paramvec     - (d*k x 1) the parameter to evalute the density
+            paramvec     - (d   x k) the parameter to evalute the density
+            update       - (k x 1) which of the parameters should be updated, order
+                               delta, mu, nu ,sigma 
+            compute_E    - (bool) Compute the expectations
+            update_param - (bool) update the parameters in the object
+            precompute   - (bool) is the Bessel function alredy calculated?
+            prior        - 
+        """
+        if paramvec is not None:
+            paramMat = self.paramMatToparamVec(paramvec)
+            
+            
+        if y is None:
+            y = self.y
+            
+        
+        prior = self._prior(prior)  
+        
+        out_ = np.zeros((self.d, 4))
+            
+        for i in range(self.d):
+            if paramMat is not None:
+                paramvec = paramMat[i, ]
+            res = self.NIGs[i].EMstep(y = y[:,i],
+                                p = p,
+                                paramvec = paramvec,
+                                update = update,
+                                update_param = update_param,
+                                precompute = precompute,
+                                prior        = prior[i]) 
+        
+            out_[i,:] = res
+        
+        
+        return out_
