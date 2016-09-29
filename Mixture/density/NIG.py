@@ -233,7 +233,18 @@ class NIG_conj(NIGpy):
             Q[0, 0] -= prior[0,1]
             Q[1, 1] -= prior[1,1]
             b[0]    -= prior[0,0] *prior[0,1]
-            b[1]    -= prior[1,0] *prior[1,1]           
+            b[1]    -= prior[1,0] *prior[1,1]      
+            
+        
+        # nu step
+        if update[2]  > 0:
+            c  = 0.5 * (np.sum(p_EV) + sum_pEiV - 2*sum_p  )
+            c0 = 0.5 * sum_p 
+            if prior is not None:
+                c  +=  prior[2,1]/prior[2,0]
+                c0 +=  (prior[2,1]-1)
+            nu = c0 / c
+                 
         # sigma step
         # 
         if update[3] > 0:
@@ -242,19 +253,11 @@ class NIG_conj(NIGpy):
             H[0,0] *= -1.
             n_ = sum_p*0.5
             if prior is not None:
-                H[0,0] += (prior[2,1] + 1) * prior[2,0]
-                n_ += prior[2,1] + 1
-                
+                H[0,0] += (prior[3,1] + 1) * prior[3,0]
+                n_ += prior[3,1] + 1
+            
             sigma = np.sqrt(H[0,0]/n_)
-        
-        # nu step
-        if update[2]  > 0:
-            c  = 0.5 * (np.sum(p_EV) + sum_pEiV - 2*sum_p  )
-            c0 = 0.5 * sum_p 
-            if prior is not None:
-                c  +=  prior[3,1]/prior[3,0]
-                c0 +=  (prior[3,1]-1)
-            nu = c0 / c
+
                
         return [delta, mu, np.log(nu), np.log(sigma)]
     
@@ -356,7 +359,7 @@ class multi_univ_NIG_conj(multi_univ_NIGpy):
     def _prior(self, prior_ = None):
         
         if prior_ is None:
-            return [ self.NIGs[0].prior for i in range(self.d)]  # @UnusedVariable
+            return [ self.NIGs[i].prior for i in range(self.d)]  # @UnusedVariable
         
         return prior_       
 
