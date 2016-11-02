@@ -136,7 +136,7 @@ class NIG_conj(NIG):
         assuming 
         \delta -  N (\theta_01, theta_11^-1)
         \mu    -  N (\theta_02, theta_12^-1)
-        \sigma -  IG(alpha, beta)
+        \sigma -  G(alpha, beta)
         \nu    -  IG(alpha, beta)
     """
     def __init__(self, param = None, paramvec = None, prior = None):
