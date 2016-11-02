@@ -90,8 +90,8 @@ double limitKe_inf(const double );
 double polyEval(const double x, const double P[], const int n)
 {
 	double res = P[n - 1];
-
-	for(int i = n -2; i >= 0 ; --i)
+	int i;
+	for( i = n -2; i >= 0 ; --i)
 	{
 		res *= x;
 		res += P[i];
@@ -107,8 +107,8 @@ void bessel1e(const double* x, double *res, const int n)
 	 * x   - (n x 1) value
 	 * res - (n x 1) result vector
 	 */
-
-	for(int i = 0; i < n; i++)
+	int i ;
+	for(i = 0; i < n; i++)
 	{
 		// return error if neg!
 		// return inf if 0.
@@ -150,7 +150,8 @@ void bessel1(const double* x, double *res, const int n)
 	 * res - (n x 1) result vector
 	 */
 
-	for(int i = 0; i < n; i++)
+	int i ;
+	for(i = 0; i < n; i++)
 	{
 		// return error if neg!
 		// return inf if 0.
@@ -392,8 +393,8 @@ void bessel0(const double* x, double *res, const int n)
 	 * x   - (n x 1) value
 	 * res - (n x 1) result vector
 	 */
-
-	for(int i = 0; i < n; i++)
+	int i;
+	for( i = 0; i < n; i++)
 	{
 		// return error if neg!
 		// return inf if 0.
@@ -419,8 +420,8 @@ void bessel0e(const double* x, double *res, const int n)
 	 * x   - (n x 1) value
 	 * res - (n x 1) result vector
 	 */
-
-	for(int i = 0; i < n; i++)
+	int i;
+	for( i = 0; i < n; i++)
 	{
 		// return error if neg!
 		// return inf if 0.

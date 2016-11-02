@@ -279,12 +279,11 @@ class NIG(object):
         logf = y_ * ( mu / sigma)
         logf += const
         logf += 0.5 * (np.log(a) - np.log(b))
-        
-        K1e = sps.k1e( np.sqrt(a * b))
+        sqrt_ab = np.sqrt(a * b)
+        K1e = sps.k1e( sqrt_ab)
         if precompute:
             self.K1e = K1e
-        logf += np.log(K1e) - np.sqrt(a * b)
-        
+        logf += np.log(K1e) - sqrt_ab
         if not log_:
             return np.exp(logf)
         

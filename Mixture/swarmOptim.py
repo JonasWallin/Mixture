@@ -7,7 +7,7 @@ def swarm(Mixobj,
                iteration = 10, 
                mutate_iteration = 20, 
                burst_iteration = 20, 
-               local_iter = 5, 
+               local_iteration = 5, 
                silent= False):
     """    
         A mutation type algorithm to find good starting point for optimization or MCMC
@@ -40,10 +40,10 @@ def swarm(Mixobj,
     for j in range(iteration):  # @UnusedVariable
         if not silent:
             print('pre burnin iteration {j}'.format(j = j))
-        mutate(Mixobj, prec, iteration = mutate_iteration, silent = silent)
+        #mutate(Mixobj, prec, iteration = mutate_iteration, silent = silent)
         mutate(Mixobj, prec, iteration = mutate_iteration, silent = silent, rand_class =True)
         burst(Mixobj,        iteration = burst_iteration,   silent = silent)
-        for k in range(local_iter):  # @UnusedVariable
+        for k in range(local_iteration):  # @UnusedVariable
             Mixobj.step()
 
 

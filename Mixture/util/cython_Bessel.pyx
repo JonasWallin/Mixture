@@ -2,7 +2,11 @@
 import numpy as np
 cimport numpy as np
 cimport cython
-import cPickle as pickle
+import sys
+if sys.version_info[0] == 3:
+    import _pickle as pickle
+else:
+    import cPickle as pickle
 
 
 

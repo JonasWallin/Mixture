@@ -295,7 +295,21 @@ class Test_NIG(unittest.TestCase):
             testing that the mean is approx delta
         """
         np.testing.assert_approx_equal( self.simObj.delta , np.mean(self.Y), 1e-2)
+ 
+class Test_NIG_vs_pNIG(unittest.TestCase):
+
+
+    def setUp(self):
+        n  = 1000
+        self.simObj = NIG(paramvec = [1.1, 2.12,0.1,0.1])
+        self.simObjp = pNIG(paramvec = [1.1, 2.12,0.1,0.1])
+        self.Y = self.simObj.simulate(n = n)
         
+    def test_f(self):
+        """
+            testing that the function approxiamte integrate to one
+        """
+        np.testing.assert_array_almost_equal(self.simObj(y = self.Y), self.simObjp(y = self.Y), decimal = 5)                
                                         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

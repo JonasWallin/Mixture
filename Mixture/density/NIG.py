@@ -129,7 +129,7 @@ class NIG(NIGpy):
  
 
 
-class NIG_conj(NIGpy):
+class NIG_conj(NIG):
     """
         NIG with conjugate prior 
         
@@ -255,6 +255,10 @@ class NIG_conj(NIGpy):
             if prior is not None:
                 H[0,0] += (prior[3,1] + 1) * prior[3,0]
                 n_ += prior[3,1] + 1
+            else:
+                #ensure that std not singular
+                H[0,0] += 1e-8
+                n_ += 1
             
             sigma = np.sqrt(H[0,0]/n_)
 

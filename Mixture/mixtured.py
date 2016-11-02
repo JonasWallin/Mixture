@@ -11,7 +11,12 @@ import numpy as np
 import copy as cp
 import numpy.random as npr
 from scipy.misc import logsumexp
-import cPickle as pickle
+import sys
+
+if sys.version_info[0] == 3:
+    import _pickle as pickle
+else:
+    import cPickle as pickle
 
 
 #TODO: 1,setup general parameter setup 2,EMstep
@@ -446,6 +451,6 @@ class mixtured(object):
 
     def save_param(self, filename):
         p, alpha, paramMat = self.get_paramMat()
-        with open(filename, 'w') as f:
+        with open(filename, 'wb') as f:
             pickle.dump({'alpha': alpha, 'paramMat': paramMat}, f, -1)
 
